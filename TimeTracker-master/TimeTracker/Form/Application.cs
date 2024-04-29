@@ -37,7 +37,7 @@ namespace TimeTracker.Form
         {
             Data = new BindingList<TimeTrackerData>();
 
-            TrackingService = new TrackingService();
+            TrackingService = new TrackingService(this);
 
             RefreshTimer = new Timer
             {
@@ -227,12 +227,16 @@ namespace TimeTracker.Form
             RefreshTrackingButtons();
             this.trackingStartTimeToolStripTextBox.Text = TrackingService.StartTime.LocalDateTime.ToString("h\\:mm\\:ss");
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
+            this.panel1.Visible = false;
         }
 
         private async void stopTrackingToolStripButton_Click(object sender, EventArgs e)
         {
+            await Pause_Tracking();
+        }
+        public async Task Pause_Tracking()
+        {
             DBAccessContext dBAccessContext = new DBAccessContext();
-
             RefreshTimer.Stop();
 
             TimeTrackerData item = TrackingService.Stop();
@@ -605,6 +609,9 @@ namespace TimeTracker.Form
             RefreshEditButtons();
             RefreshTitle();
         }
-
+        public void ShowIdleAlert()
+        {
+            this.panel1.Visible = true;
+        }
     }
 }

@@ -15,6 +15,11 @@ namespace TimeTracker
     /// </summary>
     public class TrackingService
     {
+        private readonly TimeTracker.Form.Application _application;
+        public TrackingService(TimeTracker.Form.Application application)
+        {
+            _application = application;
+        }
         //Activity Check -----------------------------------------------
         private const int WH_KEYBOARD_LL = 13;
         private const int WH_MOUSE_LL = 14;
@@ -53,7 +58,7 @@ namespace TimeTracker
                 {
                     throw new TrackingServiceException("Cannot return tracking start time - tracking has not started.");
                 }
-              
+
                 return _startTime;
             }
 
@@ -70,10 +75,11 @@ namespace TimeTracker
             {
                 throw new TrackingServiceException("Tracking has already started.");
             }
-           
+
             this.Tracking = true;
             this.StartTime = DateTimeOffset.Now;
-            timer=new Timer();
+            ResetKeyCount();
+            timer = new Timer();
             timer.Start();
             timer.Interval = 5 * 60 * 1000; // 5 minutes interval
             timer.Tick += Timer_Tick;
@@ -92,6 +98,7 @@ namespace TimeTracker
             }
 
             this.Tracking = false;
+            ResetKeyCount();
             timer.Stop();
             return new TimeTrackerData(_startTime, DateTimeOffset.Now);
         }
@@ -114,24 +121,10 @@ namespace TimeTracker
             }
         }
 
-        /// <summary>
-        /// Capture screenshot
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap CaptureScreen()
-        {
-            Rectangle bounds = Screen.PrimaryScreen.Bounds;
-            Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
-                g.CopyFromScreen(Point.Empty, Point.Empty, bounds.Size);
-            }
-            return bitmap;
-        }
-
         private async void Timer_Tick(object sender, EventArgs e)
         {
             int keyStrokes = CheckActivity();
+            idleCheckAfter1Min(keyStrokes);
             Bitmap screenshot = CaptureScreen();
             //var screenshotFolderPath = @"D:/Screenshots";
             //string fileName = $"screenshot_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png";
@@ -147,6 +140,21 @@ namespace TimeTracker
             }
             DBAccessContext dBAccessContext = new DBAccessContext();
             await dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes);
+        }
+
+        /// <summary>
+        /// Capture screenshot
+        /// </summary>
+        /// <returns></returns>
+        public Bitmap CaptureScreen()
+        {
+            Rectangle bounds = Screen.PrimaryScreen.Bounds;
+            Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                g.CopyFromScreen(Point.Empty, Point.Empty, bounds.Size);
+            }
+            return bitmap;
         }
 
         //Activity Check -----------------------------------------------
@@ -184,7 +192,7 @@ namespace TimeTracker
             }
             return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
         }
-        public int CheckActivity()
+        public int CheckActivity(bool is1MinCheck = false)
         {
             //if (keystrokeCount <= ActivityThreshold || mouseClickCount <= ActivityThreshold)
             //{
@@ -192,9 +200,18 @@ namespace TimeTracker
             //}
             var totalKeyStrokeCount = keystrokeCount + mouseClickCount;
             // Reset counters for next interval
+            if (!is1MinCheck)
+            {
+                keystrokeCount = 0;
+                mouseClickCount = 0;
+            }
+            return totalKeyStrokeCount;
+        }
+
+        public void ResetKeyCount()
+        {
             keystrokeCount = 0;
             mouseClickCount = 0;
-            return totalKeyStrokeCount;
         }
         //protected override void OnFormClosing(FormClosingEventArgs e)
         //{
@@ -219,6 +236,23 @@ namespace TimeTracker
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
         //Activity Check -----------------------------------------------
+        //Idle Check -----------------------------------------------
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        private async void idleCheckAfter1Min(int oldKeyStrokes)
+        {
+
+            await Task.Delay(TimeSpan.FromMinutes(1));
+            int keyStrokesIn1Min = CheckActivity(true);
+            if (keyStrokesIn1Min + oldKeyStrokes <= 5)
+            {
+                await _application.Pause_Tracking();
+                _application.ShowIdleAlert();
+                IntPtr handle = _application.Handle;
+                SetForegroundWindow(handle);
+            }
+        }
+        //Idle Check -----------------------------------------------
     }
 
     /// <summary>

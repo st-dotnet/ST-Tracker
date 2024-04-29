@@ -35,6 +35,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.alert = new System.Windows.Forms.Label();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.DateStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -59,6 +61,7 @@
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.toolStripMain.SuspendLayout();
@@ -71,6 +74,7 @@
             // toolStripContainer1.ContentPanel
             // 
             resources.ApplyResources(this.toolStripContainer1.ContentPanel, "toolStripContainer1.ContentPanel");
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.dataGridViewMain);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip);
             resources.ApplyResources(this.toolStripContainer1, "toolStripContainer1");
@@ -81,6 +85,22 @@
             // toolStripContainer1.TopToolStripPanel
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStripMain);
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.panel1.Controls.Add(this.alert);
+            resources.ApplyResources(this.panel1, "panel1");
+            this.panel1.Name = "panel1";
+            // 
+            // alert
+            // 
+            this.alert.BackColor = System.Drawing.Color.IndianRed;
+            this.alert.Cursor = System.Windows.Forms.Cursors.Default;
+            resources.ApplyResources(this.alert, "alert");
+            this.alert.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.alert.Name = "alert";
+            this.alert.UseMnemonic = false;
             // 
             // dataGridViewMain
             // 
@@ -282,6 +302,7 @@
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
+            this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
@@ -314,6 +335,8 @@
         private System.Windows.Forms.ToolStripStatusLabel statsSelectedText;
         private System.Windows.Forms.ToolStripStatusLabel statsCategoryText;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label alert;
     }
 }
 
