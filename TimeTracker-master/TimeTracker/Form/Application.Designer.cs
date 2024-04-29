@@ -1,4 +1,6 @@
-﻿namespace TimeTracker.Form
+﻿using System.Windows.Forms;
+
+namespace TimeTracker.Form
 {
     partial class Application
     {
@@ -92,6 +94,8 @@
             this.panel1.Controls.Add(this.alert);
             resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
+            this.panel1.Visible = false;
+            this.panel1.Dock = DockStyle.Bottom;
             // 
             // alert
             // 
