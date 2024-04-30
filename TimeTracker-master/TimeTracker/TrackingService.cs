@@ -94,7 +94,8 @@ namespace TimeTracker
         {
             if (!Tracking)
             {
-                throw new TrackingServiceException("Tracking was not started.");
+                return null;
+                //throw new TrackingServiceException("Tracking was not started.");
             }
 
             this.Tracking = false;
@@ -116,6 +117,15 @@ namespace TimeTracker
                 }
 
                 System.TimeSpan timeSpan = DateTimeOffset.Now.Subtract(this.StartTime);
+
+                return timeSpan.Format();
+            }
+        }
+        public String ZeroTime
+        {
+            get
+            {
+                System.TimeSpan timeSpan = TimeSpan.Zero;
 
                 return timeSpan.Format();
             }

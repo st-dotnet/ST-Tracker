@@ -595,13 +595,20 @@ namespace TimeTracker.Form
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             TimeTrackerData item = TrackingService.Stop();
-            TimeSpan statTotal = item.GetTimeElapsed();
-            await dBAccessContext.AddUpdateTrackerInfo(statTotal);
             RefreshTimer.Stop();
-            Data = new BindingList<TimeTrackerData>();
             RefreshTrackingButtons();
             RefreshCategoryPicker();
+            this.panel1.Visible = false;
+            this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
+            this.categoryToolStripComboBox.Items.Clear();
+            this.categoryToolStripComboBox.Text = "";
+            this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
             Data.Clear();
+            if (item != null)
+            {
+                TimeSpan statTotal = item.GetTimeElapsed();
+                await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+            }
 
             // No need to close handles here, FileInfo doesn't use them
             file = null;

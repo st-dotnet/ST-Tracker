@@ -174,7 +174,7 @@
   <Fragment>
     <ComponentGroup Id="assets_images_files" Directory="assets_images">
       <Component Id="assets_images_2.png" Guid="c2f2592d-3252-407a-bf46-9ff5fcd4e1f2">
-        <File Id="assets_images_2.png" Name="2.png" Source="$(var.TimeTracker_TargetDir)assets\images\2.png" />
+        <File Id="assets_images_2.png" Name="2.png" Source="Images\2.png" />
       </Component>
     </ComponentGroup>
   </Fragment>
@@ -182,10 +182,10 @@
   <Fragment>
     <ComponentGroup Id="Images_files" Directory="Images">
       <Component Id="Images_clock.ico" Guid="0d2c2662-c629-460f-87da-5f69e7b8c893">
-        <File Id="Images_clock.ico" Name="clock.ico" Source="$(var.TimeTracker_TargetDir)Images\clock.ico" />
+        <File Id="Images_clock.ico" Name="clock.ico" Source="Images\clock.ico" />
       </Component>
       <Component Id="Images_clock.svg" Guid="18af1d76-763d-4798-ade8-dd8bd403a950">
-        <File Id="Images_clock.svg" Name="clock.svg" Source="$(var.TimeTracker_TargetDir)Images\clock.svg" />
+        <File Id="Images_clock.svg" Name="clock.svg" Source="Images\clock.svg" />
       </Component>
     </ComponentGroup>
   </Fragment>
