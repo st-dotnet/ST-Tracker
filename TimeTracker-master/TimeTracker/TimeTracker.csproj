@@ -211,6 +211,8 @@
     <Content Include="Icon.ico" />
     <Content Include="Images\clock.ico" />
     <Content Include="Images\clock.svg" />
+    <None Include="Resources\2.png" />
+    <None Include="Resources\v915-wit-011-d.jpg" />
     <None Include="Images\icon-delete.png" />
   </ItemGroup>
   <ItemGroup />

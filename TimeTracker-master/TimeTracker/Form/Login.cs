@@ -32,46 +32,19 @@ namespace TimeTracker.Form
                 .Build();
             userManager = new UserInformationManager("user_info.xml");
         }
-
-        private async void button1_Click(object sender, EventArgs e)
-        {
-            bool isAuthenticated = false; // Change to your actual authentication logic
-            var email = textBox1.Text;
-            var password = textBox2.Text;
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Email or password is required!");
-            }
-            else if (!email.Contains(stDomain))
-            {
-                MessageBox.Show("Please enter a valid email with company domain!");
-            }
-            else
-            {
-                isAuthenticated = await Authentication.GetATokenForGraph(email, password);
-                if (isAuthenticated)
-                {
-                    // Authentication successful, close login form and open main application form
-                    this.Hide(); // Hide the login form
-                    Application appForm = new Application();
-                    appForm.ShowDialog(); // Show the main application form
-                    this.Close(); // Close the login form
-                }
-                else
-                {
-                    MessageBox.Show("Authentication failed. Please try again.");
-                }
-            }
-        }
         private void Login_Load(object sender, EventArgs e)
         {
-
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
         }
 
         private async void button2_Click(object sender, EventArgs e)
         {
             string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
-            AuthenticationResult result = await publicClientApp.AcquireTokenInteractive(scopes).ExecuteAsync();
+            AuthenticationResult result = await publicClientApp.AcquireTokenInteractive(scopes)
+                   .WithParentActivityOrWindow(this)
+                   .WithUseEmbeddedWebView(false)
+                   .ExecuteAsync();
             if (result != null)
             {
                 userManager.SaveUserInformation(result);

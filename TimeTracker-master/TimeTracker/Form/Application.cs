@@ -35,6 +35,8 @@ namespace TimeTracker.Form
         private bool isSaved = true;
         public Application()
         {
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
             Data = new BindingList<TimeTrackerData>();
 
             TrackingService = new TrackingService(this);
@@ -422,8 +424,13 @@ namespace TimeTracker.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Application_FormClosing(object sender, FormClosingEventArgs e)
+        private async void Application_FormClosing(object sender, FormClosingEventArgs e)
         {
+            var tracking = TrackingService.Tracking;
+            if (tracking)
+            {
+                await stopTracking();
+            }
             if (SaveIfNecessary() == DialogResult.Cancel)
             {
                 e.Cancel = true;
