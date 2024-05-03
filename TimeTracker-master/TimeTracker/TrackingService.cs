@@ -42,6 +42,7 @@ namespace TimeTracker
         //private LowActivityDialog lowActivityDialog;
         //Activity Check -----------------------------------------------
         private DateTimeOffset _startTime;
+        private DateTimeOffset StartTimeInterval;
         private Timer timer;
 
         /// <summary>
@@ -80,10 +81,11 @@ namespace TimeTracker
 
             this.Tracking = true;
             this.StartTime = DateTimeOffset.Now;
+            this.StartTimeInterval = this.StartTime;
             ResetKeyCount();
             timer = new Timer();
             timer.Start();
-            timer.Interval = 5 * 60 * 1000; // 5 minutes interval
+            timer.Interval = 10 * 60 * 1000; // 10 minutes interval
             timer.Tick += Timer_Tick;
             return this.StartTime;
         }
@@ -151,9 +153,17 @@ namespace TimeTracker
                 screenshotBytes = stream.ToArray();
             }
             DBAccessContext dBAccessContext = new DBAccessContext();
+            TimeSpan elapsedTime = GetIntervalTimeElasped();
+            //Save timer data 
+            await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
+            this.StartTimeInterval = DateTimeOffset.Now;
             await dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes);
         }
-
+        public TimeSpan GetIntervalTimeElasped()
+        {
+            TimeSpan elapsedTime = DateTimeOffset.Now - StartTimeInterval;
+            return elapsedTime;
+        }
         /// <summary>
         /// Capture screenshot
         /// </summary>

@@ -99,6 +99,13 @@ namespace TimeTracker.Form
 
         private void RefreshStatistics()
         {
+            for (int i = Data.Count - 1; i >= 0; i--)
+            {
+                if (Data[i] == null)
+                {
+                    Data.RemoveAt(i);
+                }
+            }
             TimeSpan statTotal = Data.Sum(value => value.GetTimeElapsed());
             this.statsTotalText.Text = String.Format(Properties.Resources.Application_statsTotal_Text, statTotal.Format());
 
@@ -246,7 +253,7 @@ namespace TimeTracker.Form
             Data.Add(item);
             RefreshTrackingButtons();
             RefreshCategoryPicker();
-            TimeSpan statTotal = item.GetTimeElapsed();
+            TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
             await dBAccessContext.AddUpdateTrackerInfo(statTotal);
         }
 
@@ -608,7 +615,7 @@ namespace TimeTracker.Form
             Data.Clear();
             if (item != null)
             {
-                TimeSpan statTotal = item.GetTimeElapsed();
+                TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
                 await dBAccessContext.AddUpdateTrackerInfo(statTotal);
             }
 
