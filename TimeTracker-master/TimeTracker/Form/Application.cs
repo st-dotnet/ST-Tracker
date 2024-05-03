@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.SqlClient;
 using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Resources;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using TimeTracker.DapperUtility;
 using TimeTracker.Model;
 using TimeTracker.Properties;
-using Dapper;
 using TimeTracker.Utilities;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace TimeTracker.Form
@@ -75,7 +68,9 @@ namespace TimeTracker.Form
             RefreshTrackingButtons();
             RefreshEditButtons();
             RefreshStatistics();
+            this.TopMost = true;
         }
+
         private void SaveSettings()
         {
             // Settings.Default.alwaysOnTop = this.alwaysOnTopToolStripMenuItem.Checked;

@@ -26,6 +26,7 @@ namespace TimeTracker
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_LBUTTONDOWN = 0x0201;
         private const int WM_RBUTTONDOWN = 0x0204;
+        private const int WM_MOUSEWHEEL = 0x020A;
 
         private LowLevelKeyboardProc _keyboardProc;
         private LowLevelMouseProc _mouseProc;
@@ -34,6 +35,7 @@ namespace TimeTracker
 
         private int keystrokeCount = 0;
         private int mouseClickCount = 0;
+        private int mouseWheelCount = 0;
 
         private const int ActivityThreshold = 80; // Adjust this threshold as needed
         //// Define your dialog here
@@ -196,9 +198,18 @@ namespace TimeTracker
 
         private IntPtr HookCallbackMouse(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && (wParam == (IntPtr)WM_LBUTTONDOWN || wParam == (IntPtr)WM_RBUTTONDOWN))
+            if (nCode >= 0)
             {
-                mouseClickCount++;
+                if (wParam == (IntPtr)WM_LBUTTONDOWN || wParam == (IntPtr)WM_RBUTTONDOWN)
+                {
+                    // Left or right mouse button down
+                    mouseClickCount++;
+                }
+                else if (wParam == (IntPtr)WM_MOUSEWHEEL)
+                {
+                    // Mouse wheel scrolled
+                    mouseWheelCount++;
+                }
             }
             return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
         }
@@ -208,7 +219,7 @@ namespace TimeTracker
             //{
             //    Console.WriteLine("------------------------------");
             //}
-            var totalKeyStrokeCount = keystrokeCount + mouseClickCount;
+            var totalKeyStrokeCount = keystrokeCount + mouseClickCount + mouseWheelCount;
             // Reset counters for next interval
             if (!is1MinCheck)
             {
@@ -222,6 +233,7 @@ namespace TimeTracker
         {
             keystrokeCount = 0;
             mouseClickCount = 0;
+            mouseWheelCount = 0;
         }
         //protected override void OnFormClosing(FormClosingEventArgs e)
         //{
