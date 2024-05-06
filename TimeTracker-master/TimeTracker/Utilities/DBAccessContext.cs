@@ -59,8 +59,9 @@ namespace TimeTracker.Utilities
 
         public async Task SaveScreenshot(byte[] screenshotBytes, int keyStrokes)
         {
+            var dateTime = GetPreviousDate();
             var empId = await GetEmployeeId("");
-            var trackerData = await CheckTrackingExists(DateTime.Today, empId);
+            var trackerData = await CheckTrackingExists(dateTime.Date, empId);
             TrackerScreenshotData newData = new TrackerScreenshotData
             {
                 TrackerId = trackerData.TrackerId,
@@ -89,7 +90,7 @@ namespace TimeTracker.Utilities
             using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
             {
                 string addUpdateQuery = "";
-                var trackerData = await CheckTrackingExists(DateTime.Today, offlineDataToStore.EmployeeId);
+                var trackerData = await CheckTrackingExists(offlineTrackerData.Date, offlineDataToStore.EmployeeId);
                 if (trackerData != null)
                 {
                     offlineDataToStore.TrackerId = trackerData.TrackerId;
@@ -110,13 +111,14 @@ namespace TimeTracker.Utilities
         public async Task StoreTrackerDataToDB(TimeSpan statTotal)
         {
             UserInformation userInfo = userManager.RetrieveUserInformation();
+            var dateTime = GetPreviousDate();
             try
             {
                 var empId = await GetEmployeeId(userInfo.Username);
                 TrackerData newData = new TrackerData
                 {
                     TrackerId = Guid.NewGuid(),
-                    Date = DateTime.Now.Date,
+                    Date = dateTime.Date,
                     TotalTime = statTotal,
                     EmployeeId = empId,
                 };
@@ -124,7 +126,7 @@ namespace TimeTracker.Utilities
                 using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
                 {
                     string addUpdateQuery = "";
-                    var trackerData = await CheckTrackingExists(DateTime.Today, empId); // Check if Tracking exists for the same day
+                    var trackerData = await CheckTrackingExists(dateTime.Date, empId); // Check if Tracking exists for the same day
                     if (trackerData != null)
                     {
                         newData.TrackerId = trackerData.TrackerId;
@@ -145,12 +147,22 @@ namespace TimeTracker.Utilities
                 TrackerDataOffline newDataOffline = new TrackerDataOffline
                 {
                     TrackerId = Guid.NewGuid(),
-                    Date = DateTime.Now.Date,
+                    Date = dateTime.Date,
                     TotalTime = statTotal,
                     EmployeeUsername = userInfo.Username,
                 };
                 offlineTrackerDataManager.SaveTrackerDataOffline(newDataOffline);
             }
+        }
+        private DateTime GetPreviousDate()
+        {
+            var dateTime = DateTime.Now;
+            if (dateTime.TimeOfDay >= TimeSpan.Zero && dateTime.TimeOfDay < TimeSpan.FromHours(3))
+            {
+                dateTime = dateTime.AddDays(-1);
+            }
+            var dateOnly = dateTime.Date;
+            return dateTime;
         }
     }
 }
