@@ -172,10 +172,10 @@
     <value>Bottom</value>
   </data>
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 356</value>
+    <value>0, 353</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>528, 65</value>
+    <value>551, 65</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -229,7 +229,7 @@
     <value>Vertical</value>
   </data>
   <data name="dataGridViewMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>528, 350</value>
+    <value>551, 347</value>
   </data>
   <data name="dataGridViewMain.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -268,10 +268,10 @@
     <value>category</value>
   </data>
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 421</value>
+    <value>0, 418</value>
   </data>
   <data name="statusStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>528, 24</value>
+    <value>551, 24</value>
   </data>
   <data name="statusStrip.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -289,7 +289,7 @@
     <value>2</value>
   </data>
   <data name="toolStripContainer1.ContentPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>528, 445</value>
+    <value>551, 442</value>
   </data>
   <data name="&gt;&gt;toolStripContainer1.ContentPanel.Name" xml:space="preserve">
     <value>toolStripContainer1.ContentPanel</value>
@@ -334,7 +334,7 @@
     <value>2</value>
   </data>
   <data name="toolStripContainer1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>528, 470</value>
+    <value>551, 470</value>
   </data>
   <data name="toolStripContainer1.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -345,8 +345,11 @@
   <data name="toolStripMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>None</value>
   </data>
-  <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>6, 25</value>
+  <data name="toolStripMain.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9.75pt</value>
+  </data>
+  <data name="startTrackingToolStripButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
   </data>
   <data name="startTrackingToolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -361,10 +364,13 @@
     <value>Magenta</value>
   </data>
   <data name="startTrackingToolStripButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>98, 22</value>
+    <value>117, 25</value>
   </data>
   <data name="startTrackingToolStripButton.Text" xml:space="preserve">
     <value>start_tracking</value>
+  </data>
+  <data name="stopTrackingToolStripButton.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
   </data>
   <data name="stopTrackingToolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -377,16 +383,16 @@
     <value>Magenta</value>
   </data>
   <data name="stopTrackingToolStripButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
+    <value>23, 25</value>
   </data>
   <data name="stopTrackingToolStripButton.Text" xml:space="preserve">
     <value>stop_tracking</value>
   </data>
   <data name="trackingStartTimeToolStripTextBox.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Consolas, 9pt</value>
+    <value>Consolas, 11.25pt</value>
   </data>
   <data name="trackingStartTimeToolStripTextBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 25</value>
+    <value>100, 28</value>
   </data>
   <data name="trackingStartTimeToolStripTextBox.Text" xml:space="preserve">
     <value>--:--:--</value>
@@ -395,10 +401,10 @@
     <value>Right</value>
   </data>
   <data name="trackingElapsedTimeToolStripTextBox.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Consolas, 9pt</value>
+    <value>Consolas, 11.25pt</value>
   </data>
   <data name="trackingElapsedTimeToolStripTextBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 25</value>
+    <value>100, 28</value>
   </data>
   <data name="trackingElapsedTimeToolStripTextBox.Text" xml:space="preserve">
     <value>0:00</value>
@@ -406,8 +412,14 @@
   <data name="trackingElapsedTimeToolStripTextBox.TextBoxTextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
   </data>
+  <data name="categoryToolStripComboBox.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
+  </data>
   <data name="categoryToolStripComboBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>121, 25</value>
+    <value>121, 28</value>
+  </data>
+  <data name="toolStripButton1.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
   </data>
   <data name="toolStripButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -428,7 +440,7 @@
     <value>Magenta</value>
   </data>
   <data name="toolStripButton1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 22</value>
+    <value>80, 25</value>
   </data>
   <data name="toolStripButton1.Text" xml:space="preserve">
     <value>Punch Out</value>
@@ -437,7 +449,7 @@
     <value>3, 0</value>
   </data>
   <data name="toolStripMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>525, 25</value>
+    <value>548, 28</value>
   </data>
   <data name="toolStripMain.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -453,6 +465,9 @@
   </data>
   <data name="&gt;&gt;toolStripMain.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="toolStripContainer1.TopToolStripPanel.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="&gt;&gt;toolStripContainer1.TopToolStripPanel.Name" xml:space="preserve">
     <value>toolStripContainer1.TopToolStripPanel</value>
@@ -1008,7 +1023,7 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>528, 470</value>
+    <value>551, 470</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1524,35 +1539,14 @@
         RU5ErkJggg==
 </value>
   </data>
+  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
     <value>220, 80</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>
-  </data>
-  <data name="&gt;&gt;DateStart.Name" xml:space="preserve">
-    <value>DateStart</value>
-  </data>
-  <data name="&gt;&gt;DateStart.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;EndDate.Name" xml:space="preserve">
-    <value>EndDate</value>
-  </data>
-  <data name="&gt;&gt;EndDate.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;TimeSpan.Name" xml:space="preserve">
-    <value>TimeSpan</value>
-  </data>
-  <data name="&gt;&gt;TimeSpan.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;CategoryName.Name" xml:space="preserve">
-    <value>CategoryName</value>
-  </data>
-  <data name="&gt;&gt;CategoryName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;statsTotalText.Name" xml:space="preserve">
     <value>statsTotalText</value>
@@ -1571,12 +1565,6 @@
   </data>
   <data name="&gt;&gt;statsCategoryText.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
-    <value>toolStripSeparator1</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;startTrackingToolStripButton.Name" xml:space="preserve">
     <value>startTrackingToolStripButton</value>
@@ -1625,6 +1613,30 @@
   </data>
   <data name="&gt;&gt;notifyIcon.Type" xml:space="preserve">
     <value>System.Windows.Forms.NotifyIcon, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;DateStart.Name" xml:space="preserve">
+    <value>DateStart</value>
+  </data>
+  <data name="&gt;&gt;DateStart.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;EndDate.Name" xml:space="preserve">
+    <value>EndDate</value>
+  </data>
+  <data name="&gt;&gt;EndDate.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;TimeSpan.Name" xml:space="preserve">
+    <value>TimeSpan</value>
+  </data>
+  <data name="&gt;&gt;TimeSpan.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;CategoryName.Name" xml:space="preserve">
+    <value>CategoryName</value>
+  </data>
+  <data name="&gt;&gt;CategoryName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>Application</value>
