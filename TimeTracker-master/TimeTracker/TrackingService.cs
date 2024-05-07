@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -7,6 +8,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TimeTracker.Model;
 using TimeTracker.Utilities;
+using AForge.Video.DirectShow;
+using System.Drawing.Imaging;
+using System.Text.RegularExpressions;
 
 namespace TimeTracker
 {
@@ -43,7 +47,7 @@ namespace TimeTracker
         //Activity Check -----------------------------------------------
         private DateTimeOffset _startTime;
         private DateTimeOffset StartTimeInterval;
-        private Timer timer;
+        private System.Windows.Forms.Timer timer;
 
         /// <summary>
         /// Stores whether we are currently tracking
@@ -83,9 +87,14 @@ namespace TimeTracker
             this.StartTime = DateTimeOffset.Now;
             this.StartTimeInterval = this.StartTime;
             ResetKeyCount();
-            timer = new Timer();
+            int timeIntervalMinutes;
+            if (!int.TryParse(ConfigurationManager.AppSettings["TimeIntervalInMinutes"], out timeIntervalMinutes))
+            {
+                timeIntervalMinutes = 5; //Default time set to 5 minutes
+            }
+            timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = 10 * 60 * 1000; // 10 minutes interval
+            timer.Interval = 30 * 1000;
             timer.Tick += Timer_Tick;
             return this.StartTime;
         }
@@ -137,27 +146,38 @@ namespace TimeTracker
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            int keyStrokes = CheckActivity();
+            SaveTimerDataAtEveryInterval();
+            int keyStrokes = CheckActivity();//Get KeyStrokes
+            await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
             idleCheckAfter1Min(keyStrokes);
+        }
+        private async Task SaveTimerDataAtEveryInterval()
+        {
+            DBAccessContext dBAccessContext = new DBAccessContext();
+            TimeSpan elapsedTime = GetIntervalTimeElasped();
+            await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
+            this.StartTimeInterval = DateTimeOffset.Now;
+        }
+        private async Task Captures(int keyStrokes)
+        {
+            Bitmap cameraCapture = await CapturePhotoAsync();
+            if (cameraCapture != null)
+            {
+                await SaveCaptures(cameraCapture, null, true);
+            }
             Bitmap screenshot = CaptureScreen();
-            //var screenshotFolderPath = @"D:/Screenshots";
-            //string fileName = $"screenshot_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png";
-            //string filePath = System.IO.Path.Combine(screenshotFolderPath, fileName);
-            //screenshot.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
-
-            //Save in db
+            await SaveCaptures(screenshot, keyStrokes, false);
+        }
+        private async Task SaveCaptures(Bitmap screenshot, int? keyStrokes, bool isCameraCapture)
+        {
+            DBAccessContext dBAccessContext = new DBAccessContext();
             byte[] screenshotBytes;
             using (MemoryStream stream = new MemoryStream())
             {
                 screenshot.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 screenshotBytes = stream.ToArray();
             }
-            DBAccessContext dBAccessContext = new DBAccessContext();
-            TimeSpan elapsedTime = GetIntervalTimeElasped();
-            //Save timer data 
-            await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
-            this.StartTimeInterval = DateTimeOffset.Now;
-            await dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes);
+            await dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes, isCameraCapture);
         }
         public TimeSpan GetIntervalTimeElasped()
         {
@@ -177,6 +197,41 @@ namespace TimeTracker
                 g.CopyFromScreen(Point.Empty, Point.Empty, bounds.Size);
             }
             return bitmap;
+        }
+        static async Task<Bitmap> CapturePhotoAsync()
+        {
+            FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            if (videoDevices.Count > 0)
+            {
+                VideoCaptureDevice videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
+                Bitmap screenshot = null;
+
+                var completionSource = new TaskCompletionSource<bool>();
+                videoSource.NewFrame += (sender, eventArgs) =>
+                {
+                    screenshot = (Bitmap)eventArgs.Frame.Clone();
+                    completionSource.TrySetResult(true);
+                };
+
+                videoSource.Start();
+
+                await Task.Delay(5000);
+
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
+
+                await completionSource.Task;
+
+                return screenshot;
+            }
+            return null;
+        }
+            private static void VideoSource_NewFrame(Bitmap bitmap)
+        {
+            string screenshotFolderPath = @"D:/Screenshots"; // Change this to your desired folder path
+            string fileName = $"screenshot_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg"; // Change the extension to match your desired format
+            string filePath = System.IO.Path.Combine(screenshotFolderPath, fileName);
+            bitmap.Save(filePath, ImageFormat.Jpeg);
         }
 
         //Activity Check -----------------------------------------------
@@ -233,8 +288,7 @@ namespace TimeTracker
             // Reset counters for next interval
             if (!is1MinCheck)
             {
-                keystrokeCount = 0;
-                mouseClickCount = 0;
+                ResetKeyCount();
             }
             return totalKeyStrokeCount;
         }
@@ -273,10 +327,14 @@ namespace TimeTracker
         private static extern bool SetForegroundWindow(IntPtr hWnd);
         private async void idleCheckAfter1Min(int oldKeyStrokes)
         {
-
             await Task.Delay(TimeSpan.FromMinutes(1));
+            int keysThresholdToStopTracking;
+            if (!int.TryParse(ConfigurationManager.AppSettings["KeysThresholdToStopTracking"], out keysThresholdToStopTracking))
+            {
+                keysThresholdToStopTracking = 5; //Default key threshhold set to 5 keys in a default 5 minutes
+            }
             int keyStrokesIn1Min = CheckActivity(true);
-            if (keyStrokesIn1Min + oldKeyStrokes <= 5)
+            if (keyStrokesIn1Min + oldKeyStrokes <= keysThresholdToStopTracking)
             {
                 await _application.Pause_Tracking();
                 _application.ShowIdleAlert();

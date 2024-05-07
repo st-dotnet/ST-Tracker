@@ -15,8 +15,9 @@ namespace DBModels.Model
         public int ScreenshotId { get; set; }
         public Guid TrackerId { get; set; }
         public byte[] Screenshots { get; set; }
-        public int Keystrokes { get; set; }
+        public int? Keystrokes { get; set; }
         public DateTime CreatedDateTime { get; set; }
+        public bool IsCameraCapture { get; set; }
     }
 
     public class TrackerDataOffline

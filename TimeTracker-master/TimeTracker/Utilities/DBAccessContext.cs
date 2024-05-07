@@ -57,7 +57,7 @@ namespace TimeTracker.Utilities
             }
         }
 
-        public async Task SaveScreenshot(byte[] screenshotBytes, int keyStrokes)
+        public async Task SaveScreenshot(byte[] screenshotBytes, int? keyStrokes, bool isCameraCapture)
         {
             var dateTime = GetPreviousDate();
             var empId = await GetEmployeeId("");
@@ -68,11 +68,12 @@ namespace TimeTracker.Utilities
                 Screenshots = screenshotBytes,
                 Keystrokes = keyStrokes,
                 CreatedDateTime = DateTime.Now,
+                IsCameraCapture = isCameraCapture,
             };
             using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
             {
-                string query = @"INSERT INTO TrackerScreenshots (TrackerId, Screenshots, Keystrokes, createdDateTime)
-                                    VALUES (@TrackerId, @Screenshots, @Keystrokes, @CreatedDateTime)";
+                string query = @"INSERT INTO TrackerScreenshots (TrackerId, Screenshots, Keystrokes, createdDateTime, IsCameraCapture)
+                                    VALUES (@TrackerId, @Screenshots, @Keystrokes, @CreatedDateTime, @IsCameraCapture)";
                 db.Execute(query, newData);
             }
         }
@@ -161,7 +162,6 @@ namespace TimeTracker.Utilities
             {
                 dateTime = dateTime.AddDays(-1);
             }
-            var dateOnly = dateTime.Date;
             return dateTime;
         }
     }
