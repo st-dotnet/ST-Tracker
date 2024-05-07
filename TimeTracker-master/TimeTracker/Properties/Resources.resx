@@ -117,17 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Application_categoryToolTip_Text" xml:space="preserve">
-    <value>Category name can contain only alphanumeric characters and these special characters: {0}</value>
-  </data>
-  <data name="Application_fileErrorMessageBox_Message" xml:space="preserve">
-    <value>Encountered an error while handling a file.</value>
-  </data>
   <data name="Application_languageChangedMessageBox_Caption" xml:space="preserve">
     <value>Language changed</value>
   </data>
   <data name="Application_unsavedMessageBox_Caption" xml:space="preserve">
     <value>Save changes</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Application_deleteMessageBox_Message" xml:space="preserve">
     <value>You sure want to delete {0} entries?</value>
@@ -135,7 +133,6 @@
   <data name="Application_unsavedMessageBox_Message" xml:space="preserve">
     <value>You have unsaved changes. Save now?</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="clock1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\clock.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -157,6 +154,12 @@
   <data name="Application_fileErrorMessageBox_Caption" xml:space="preserve">
     <value>File error</value>
   </data>
+  <data name="Application_nonexistentFileMessageBox_Message" xml:space="preserve">
+    <value>Could not load specified file because it does not exist.</value>
+  </data>
+  <data name="icon_delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\icon-delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Application_statsSelected_Text" xml:space="preserve">
     <value>Selection ({0}): {1}</value>
   </data>
@@ -172,16 +175,16 @@
   <data name="Application_statsTotal_Text" xml:space="preserve">
     <value>Total: {0}</value>
   </data>
-  <data name="Application_nonexistentFileMessageBox_Message" xml:space="preserve">
-    <value>Could not load specified file because it does not exist.</value>
+  <data name="Application_categoryToolTip_Text" xml:space="preserve">
+    <value>Category name can contain only alphanumeric characters and these special characters: {0}</value>
   </data>
   <data name="Application_language_cs" xml:space="preserve">
     <value>Czech</value>
   </data>
-  <data name="icon_delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\images\icon-delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Application_fileErrorMessageBox_Message" xml:space="preserve">
+    <value>Encountered an error while handling a file.</value>
   </data>
-  <data name="2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\logo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

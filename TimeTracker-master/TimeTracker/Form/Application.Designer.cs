@@ -48,10 +48,10 @@ namespace TimeTracker.Form
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.startTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.stopTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.trackingStartTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.trackingElapsedTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.categoryToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.trackingElapsedTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.trackingStartTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.categoryToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.DateStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -84,19 +84,21 @@ namespace TimeTracker.Form
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStripMain);
+            this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
             resources.ApplyResources(this.toolStripContainer1.TopToolStripPanel, "toolStripContainer1.TopToolStripPanel");
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStripMain);
+            this.toolStripContainer1.TopToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(31)))), ((int)(((byte)(75)))));
             this.panel1.Controls.Add(this.alert);
             resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             // 
             // alert
             // 
-            this.alert.BackColor = System.Drawing.Color.IndianRed;
+            this.alert.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(31)))), ((int)(((byte)(75)))));
             this.alert.Cursor = System.Windows.Forms.Cursors.Default;
             resources.ApplyResources(this.alert, "alert");
             this.alert.ForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -109,16 +111,16 @@ namespace TimeTracker.Form
             this.dataGridViewMain.AllowUserToDeleteRows = false;
             this.dataGridViewMain.AllowUserToOrderColumns = true;
             this.dataGridViewMain.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(184)))), ((int)(((byte)(225)))));
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
             this.dataGridViewMain.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            resources.ApplyResources(this.dataGridViewMain, "dataGridViewMain");
             this.dataGridViewMain.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewMain.BackgroundColor = System.Drawing.Color.White;
             this.dataGridViewMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridViewMain.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.Black;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
@@ -134,14 +136,15 @@ namespace TimeTracker.Form
             this.TimeSpan,
             this.CategoryName});
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(184)))), ((int)(((byte)(225)))));
             dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.Black;
             dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewMain.DefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridViewMain.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            resources.ApplyResources(this.dataGridViewMain, "dataGridViewMain");
             this.dataGridViewMain.Name = "dataGridViewMain";
             this.dataGridViewMain.ReadOnly = true;
             this.dataGridViewMain.RowHeadersVisible = false;
@@ -162,77 +165,97 @@ namespace TimeTracker.Form
             // 
             // statsTotalText
             // 
+            this.statsTotalText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(184)))), ((int)(((byte)(225)))));
             this.statsTotalText.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.statsTotalText.Name = "statsTotalText";
             resources.ApplyResources(this.statsTotalText, "statsTotalText");
             // 
             // statsSelectedText
             // 
+            this.statsSelectedText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(184)))), ((int)(((byte)(225)))));
             this.statsSelectedText.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.statsSelectedText.Name = "statsSelectedText";
             resources.ApplyResources(this.statsSelectedText, "statsSelectedText");
             // 
             // statsCategoryText
             // 
+            this.statsCategoryText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(184)))), ((int)(((byte)(225)))));
             this.statsCategoryText.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.statsCategoryText.Name = "statsCategoryText";
             resources.ApplyResources(this.statsCategoryText, "statsCategoryText");
             // 
             // toolStripMain
             // 
-            this.toolStripMain.CanOverflow = false;
+            this.toolStripMain.AllowItemReorder = true;
             resources.ApplyResources(this.toolStripMain, "toolStripMain");
+            this.toolStripMain.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
+            this.toolStripMain.CanOverflow = false;
             this.toolStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startTrackingToolStripButton,
             this.stopTrackingToolStripButton,
-            this.trackingStartTimeToolStripTextBox,
+            this.toolStripButton1,
             this.trackingElapsedTimeToolStripTextBox,
-            this.categoryToolStripComboBox,
-            this.toolStripButton1});
+            this.trackingStartTimeToolStripTextBox,
+            this.categoryToolStripComboBox});
+            this.toolStripMain.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.toolStripMain.Name = "toolStripMain";
             this.toolStripMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             // 
             // startTrackingToolStripButton
             // 
             resources.ApplyResources(this.startTrackingToolStripButton, "startTrackingToolStripButton");
+            this.startTrackingToolStripButton.BackColor = System.Drawing.Color.Transparent;
+            this.startTrackingToolStripButton.ForeColor = System.Drawing.Color.White;
+            this.startTrackingToolStripButton.Margin = new System.Windows.Forms.Padding(45, 10, 0, 2);
             this.startTrackingToolStripButton.Name = "startTrackingToolStripButton";
             this.startTrackingToolStripButton.Click += new System.EventHandler(this.startTrackingToolStripButton_Click);
             // 
             // stopTrackingToolStripButton
             // 
-            this.stopTrackingToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             resources.ApplyResources(this.stopTrackingToolStripButton, "stopTrackingToolStripButton");
+            this.stopTrackingToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.stopTrackingToolStripButton.Margin = new System.Windows.Forms.Padding(10, 10, 0, 2);
             this.stopTrackingToolStripButton.Name = "stopTrackingToolStripButton";
             this.stopTrackingToolStripButton.Click += new System.EventHandler(this.stopTrackingToolStripButton_Click);
             // 
-            // trackingStartTimeToolStripTextBox
+            // toolStripButton1
             // 
-            resources.ApplyResources(this.trackingStartTimeToolStripTextBox, "trackingStartTimeToolStripTextBox");
-            this.trackingStartTimeToolStripTextBox.Name = "trackingStartTimeToolStripTextBox";
-            this.trackingStartTimeToolStripTextBox.ReadOnly = true;
+            resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.ForeColor = System.Drawing.Color.White;
+            this.toolStripButton1.Margin = new System.Windows.Forms.Padding(40, 10, 0, 2);
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // trackingElapsedTimeToolStripTextBox
             // 
             resources.ApplyResources(this.trackingElapsedTimeToolStripTextBox, "trackingElapsedTimeToolStripTextBox");
+            this.trackingElapsedTimeToolStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
+            this.trackingElapsedTimeToolStripTextBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.trackingElapsedTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(30, 0, 1, 10);
             this.trackingElapsedTimeToolStripTextBox.Name = "trackingElapsedTimeToolStripTextBox";
             this.trackingElapsedTimeToolStripTextBox.ReadOnly = true;
+            // 
+            // trackingStartTimeToolStripTextBox
+            // 
+            this.trackingStartTimeToolStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
+            this.trackingStartTimeToolStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.trackingStartTimeToolStripTextBox, "trackingStartTimeToolStripTextBox");
+            this.trackingStartTimeToolStripTextBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.trackingStartTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 1, 10);
+            this.trackingStartTimeToolStripTextBox.Name = "trackingStartTimeToolStripTextBox";
+            this.trackingStartTimeToolStripTextBox.ReadOnly = true;
             // 
             // categoryToolStripComboBox
             // 
             this.categoryToolStripComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.categoryToolStripComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             resources.ApplyResources(this.categoryToolStripComboBox, "categoryToolStripComboBox");
+            this.categoryToolStripComboBox.Margin = new System.Windows.Forms.Padding(50, 0, 1, 0);
             this.categoryToolStripComboBox.Name = "categoryToolStripComboBox";
             this.categoryToolStripComboBox.Sorted = true;
             this.categoryToolStripComboBox.TextUpdate += new System.EventHandler(this.categoryToolStripComboBox_TextUpdate);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -251,7 +274,7 @@ namespace TimeTracker.Form
             this.DateStart.DataPropertyName = "StartTime";
             dataGridViewCellStyle3.Format = "yyyy-MM-dd HH:mm:ss";
             this.DateStart.DefaultCellStyle = dataGridViewCellStyle3;
-            this.DateStart.FillWeight = 102.0872F;
+            this.DateStart.FillWeight = 106.0775F;
             resources.ApplyResources(this.DateStart, "DateStart");
             this.DateStart.Name = "DateStart";
             this.DateStart.ReadOnly = true;
@@ -261,7 +284,7 @@ namespace TimeTracker.Form
             this.EndDate.DataPropertyName = "EndTime";
             dataGridViewCellStyle4.Format = "yyyy-MM-dd HH:mm:ss";
             this.EndDate.DefaultCellStyle = dataGridViewCellStyle4;
-            this.EndDate.FillWeight = 101.5229F;
+            this.EndDate.FillWeight = 105.4911F;
             resources.ApplyResources(this.EndDate, "EndDate");
             this.EndDate.Name = "EndDate";
             this.EndDate.ReadOnly = true;
@@ -269,7 +292,7 @@ namespace TimeTracker.Form
             // TimeSpan
             // 
             this.TimeSpan.DataPropertyName = "TimeElapsed";
-            this.TimeSpan.FillWeight = 83.63944F;
+            this.TimeSpan.FillWeight = 86.90866F;
             resources.ApplyResources(this.TimeSpan, "TimeSpan");
             this.TimeSpan.Name = "TimeSpan";
             this.TimeSpan.ReadOnly = true;
@@ -277,7 +300,7 @@ namespace TimeTracker.Form
             // CategoryName
             // 
             this.CategoryName.DataPropertyName = "Category";
-            this.CategoryName.FillWeight = 112.7506F;
+            this.CategoryName.FillWeight = 101.5229F;
             resources.ApplyResources(this.CategoryName, "CategoryName");
             this.CategoryName.Name = "CategoryName";
             this.CategoryName.ReadOnly = true;
@@ -286,13 +309,13 @@ namespace TimeTracker.Form
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "Application";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Application_FormClosing);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.PerformLayout();
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
-            this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
             this.panel1.ResumeLayout(false);
