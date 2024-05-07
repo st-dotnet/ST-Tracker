@@ -232,6 +232,7 @@ namespace TimeTracker.Form
             this.trackingStartTimeToolStripTextBox.Text = TrackingService.StartTime.LocalDateTime.ToString("h\\:mm\\:ss");
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
             this.panel1.Visible = false;
+            this.panel2.Visible = true;
         }
 
         private async void stopTrackingToolStripButton_Click(object sender, EventArgs e)
@@ -608,6 +609,7 @@ namespace TimeTracker.Form
             RefreshTrackingButtons();
             RefreshCategoryPicker();
             this.panel1.Visible = false;
+            this.panel2.Visible = true;
             this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
             this.categoryToolStripComboBox.Items.Clear();
             this.categoryToolStripComboBox.Text = "";
@@ -628,6 +630,7 @@ namespace TimeTracker.Form
         public void ShowIdleAlert()
         {
             this.panel1.Visible = true;
+            this.panel2.Visible = false;
         }
     }
 }
