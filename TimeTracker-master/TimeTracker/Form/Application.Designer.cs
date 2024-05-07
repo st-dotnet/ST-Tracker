@@ -41,6 +41,10 @@ namespace TimeTracker.Form
             this.panel1 = new System.Windows.Forms.Panel();
             this.alert = new System.Windows.Forms.Label();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
+            this.DateStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TimeSpan = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CategoryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statsTotalText = new System.Windows.Forms.ToolStripStatusLabel();
             this.statsSelectedText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -54,10 +58,6 @@ namespace TimeTracker.Form
             this.categoryToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.DateStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TimeSpan = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CategoryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -153,6 +153,42 @@ namespace TimeTracker.Form
             this.dataGridViewMain.SelectionChanged += new System.EventHandler(this.dataGridViewMain_SelectionChanged);
             this.dataGridViewMain.Paint += new System.Windows.Forms.PaintEventHandler(this.dataGridViewMain_Paint);
             this.dataGridViewMain.Resize += new System.EventHandler(this.dataGridViewMain_Resize);
+            // 
+            // DateStart
+            // 
+            this.DateStart.DataPropertyName = "StartTime";
+            dataGridViewCellStyle3.Format = "yyyy-MM-dd HH:mm:ss";
+            this.DateStart.DefaultCellStyle = dataGridViewCellStyle3;
+            this.DateStart.FillWeight = 106.0775F;
+            resources.ApplyResources(this.DateStart, "DateStart");
+            this.DateStart.Name = "DateStart";
+            this.DateStart.ReadOnly = true;
+            // 
+            // EndDate
+            // 
+            this.EndDate.DataPropertyName = "EndTime";
+            dataGridViewCellStyle4.Format = "yyyy-MM-dd HH:mm:ss";
+            this.EndDate.DefaultCellStyle = dataGridViewCellStyle4;
+            this.EndDate.FillWeight = 105.4911F;
+            resources.ApplyResources(this.EndDate, "EndDate");
+            this.EndDate.Name = "EndDate";
+            this.EndDate.ReadOnly = true;
+            // 
+            // TimeSpan
+            // 
+            this.TimeSpan.DataPropertyName = "TimeElapsed";
+            this.TimeSpan.FillWeight = 86.90866F;
+            resources.ApplyResources(this.TimeSpan, "TimeSpan");
+            this.TimeSpan.Name = "TimeSpan";
+            this.TimeSpan.ReadOnly = true;
+            // 
+            // CategoryName
+            // 
+            this.CategoryName.DataPropertyName = "Category";
+            this.CategoryName.FillWeight = 101.5229F;
+            resources.ApplyResources(this.CategoryName, "CategoryName");
+            this.CategoryName.Name = "CategoryName";
+            this.CategoryName.ReadOnly = true;
             // 
             // statusStrip
             // 
@@ -268,42 +304,6 @@ namespace TimeTracker.Form
             // 
             resources.ApplyResources(this.notifyIcon, "notifyIcon");
             this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
-            // 
-            // DateStart
-            // 
-            this.DateStart.DataPropertyName = "StartTime";
-            dataGridViewCellStyle3.Format = "yyyy-MM-dd HH:mm:ss";
-            this.DateStart.DefaultCellStyle = dataGridViewCellStyle3;
-            this.DateStart.FillWeight = 106.0775F;
-            resources.ApplyResources(this.DateStart, "DateStart");
-            this.DateStart.Name = "DateStart";
-            this.DateStart.ReadOnly = true;
-            // 
-            // EndDate
-            // 
-            this.EndDate.DataPropertyName = "EndTime";
-            dataGridViewCellStyle4.Format = "yyyy-MM-dd HH:mm:ss";
-            this.EndDate.DefaultCellStyle = dataGridViewCellStyle4;
-            this.EndDate.FillWeight = 105.4911F;
-            resources.ApplyResources(this.EndDate, "EndDate");
-            this.EndDate.Name = "EndDate";
-            this.EndDate.ReadOnly = true;
-            // 
-            // TimeSpan
-            // 
-            this.TimeSpan.DataPropertyName = "TimeElapsed";
-            this.TimeSpan.FillWeight = 86.90866F;
-            resources.ApplyResources(this.TimeSpan, "TimeSpan");
-            this.TimeSpan.Name = "TimeSpan";
-            this.TimeSpan.ReadOnly = true;
-            // 
-            // CategoryName
-            // 
-            this.CategoryName.DataPropertyName = "Category";
-            this.CategoryName.FillWeight = 101.5229F;
-            resources.ApplyResources(this.CategoryName, "CategoryName");
-            this.CategoryName.Name = "CategoryName";
-            this.CategoryName.ReadOnly = true;
             // 
             // Application
             // 
