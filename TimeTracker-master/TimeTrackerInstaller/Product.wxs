@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<?define TimeTracker_TargetDir=$(var.TimeTracker.TargetDir)?>
-	<Product Id="*" Name="STTimeTracker" Language="1033" Version="4.0.0.0" Manufacturer="supremetechnologiesindia.com" UpgradeCode="a5ffc64c-a79d-41be-b3c2-1342ddec536a">
+	<Product Id="*" Name="STTimeTracker" Language="1033" Version="1.0.0.0" Manufacturer="supremetechnologiesindia.com" UpgradeCode="a5ffc64c-a79d-41be-b3c2-1342ddec536a">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Comments="Version: 1.0.0.0" />
 
 		<Icon Id="icon.ico" SourceFile="$(var.ProjectDir)\Icon.ico" />
@@ -13,10 +13,10 @@
 
 		<UIRef Id="WixUI_Minimal" />
 		<Upgrade Id="90f9ccfa-7975-4908-b462-7b1bc3e5c8e5">
-			<UpgradeVersion Minimum="1.0.0" IncludeMinimum="yes" Maximum="4.0.0.0" IncludeMaximum="yes" Property="OLD_VERSION_FOUND" />
+			<UpgradeVersion Minimum="1.0.0.0" IncludeMinimum="yes" Maximum="4.0.5.0" IncludeMaximum="no" Property="OLD_VERSION_FOUND" />
 		</Upgrade>
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
 		<MediaTemplate EmbedCab="yes" />
 
 		<Feature Id="ProductFeature" Title="STTimeTracker" Level="1">
