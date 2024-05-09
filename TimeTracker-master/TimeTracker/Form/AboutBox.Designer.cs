@@ -57,6 +57,7 @@
             // logoPictureBox
             // 
             resources.ApplyResources(this.logoPictureBox, "logoPictureBox");
+            this.logoPictureBox.Image = global::TimeTracker.Properties.Resources.logo;
             this.logoPictureBox.Name = "logoPictureBox";
             this.tableLayoutPanel.SetRowSpan(this.logoPictureBox, 7);
             this.logoPictureBox.TabStop = false;

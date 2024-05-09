@@ -4,8 +4,8 @@
 	<Product Id="*" Name="STTimeTracker" Language="1033" Version="1.0.0.0" Manufacturer="supremetechnologiesindia.com" UpgradeCode="a5ffc64c-a79d-41be-b3c2-1342ddec536a">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Comments="Version: 1.0.0.0" />
 
-		<Icon Id="icon.ico" SourceFile="$(var.ProjectDir)\Icon.ico" />
-		<Property Id="ARPPRODUCTICON">icon.ico</Property>
+		<Icon Id="logo.ico" SourceFile="$(var.ProjectDir)\logo.ico" />
+		<Property Id="ARPPRODUCTICON">logo.ico</Property>
 
 		<WixVariable Id="WixUIBannerBmp" Value="Images\installer_top-banner.bmp" />
 		<WixVariable Id="WixUIDialogBmp" Value="Images\installer_background.bmp" />
@@ -172,8 +172,8 @@
 			<Component Id="Microsoft.Identity.Client.dll" Guid="1d1df9d3-de1e-4172-989e-cfd6194c7007">
 				<File Id="Microsoft.Identity.Client.dll" Name="Microsoft.Identity.Client.dll" Source="$(var.TimeTracker_TargetDir)Microsoft.Identity.Client.dll" />
 			</Component>
-			<Component Id="Icon.ico" Guid="3894f7e0-18e4-48a0-8da2-a2a1882aa49b">
-				<File Id="Icon.ico" Name="Icon.ico" Source="$(var.ProjectDir)\Icon.ico" />
+			<Component Id="logo.ico" Guid="3894f7e0-18e4-48a0-8da2-a2a1882aa49b">
+				<File Id="logo.ico" Name="logo.ico" Source="$(var.ProjectDir)\logo.ico" />
 			</Component>
 			<Component Id="System.Runtime.CompilerServices.Unsafe.dll" Guid="0736f68a-cc03-4a1b-a1ac-c8023883dfe8">
 				<File Id="System.Runtime.CompilerServices.Unsafe.dll" Name="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.TimeTracker_TargetDir)System.Runtime.CompilerServices.Unsafe.dll" />

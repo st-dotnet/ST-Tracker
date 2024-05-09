@@ -22,13 +22,13 @@
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
     <Content Include="Images\2.png" />
     <Content Include="Images\clock.ico" />
     <Content Include="Images\clock.svg" />
     <Content Include="Images\installer_background.bmp" />
     <Content Include="Images\installer_top-banner.bmp" />
     <Content Include="License.rtf" />
+    <Content Include="logo.ico" />
     <Content Include="TimeTrackerInstaller.wax" />
   </ItemGroup>
   <ItemGroup>

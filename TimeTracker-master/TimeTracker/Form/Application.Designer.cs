@@ -55,16 +55,16 @@ namespace TimeTracker.Form
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.startTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.stopTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.trackingStartTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.trackingElapsedTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.trackingStartTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.categoryToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.panel3 = new System.Windows.Forms.Panel();
+            this.profilePictureBox = new System.Windows.Forms.PictureBox();
             this.EmployeeName = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.profilePictureBox = new System.Windows.Forms.PictureBox();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -75,8 +75,8 @@ namespace TimeTracker.Form
             this.statusStrip.SuspendLayout();
             this.toolStripMain.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStripContainer1
@@ -287,6 +287,16 @@ namespace TimeTracker.Form
             this.stopTrackingToolStripButton.Name = "stopTrackingToolStripButton";
             this.stopTrackingToolStripButton.Click += new System.EventHandler(this.stopTrackingToolStripButton_Click);
             // 
+            // trackingStartTimeToolStripTextBox
+            // 
+            this.trackingStartTimeToolStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
+            this.trackingStartTimeToolStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            resources.ApplyResources(this.trackingStartTimeToolStripTextBox, "trackingStartTimeToolStripTextBox");
+            this.trackingStartTimeToolStripTextBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.trackingStartTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(5, 20, 1, 10);
+            this.trackingStartTimeToolStripTextBox.Name = "trackingStartTimeToolStripTextBox";
+            this.trackingStartTimeToolStripTextBox.ReadOnly = true;
+            // 
             // toolStripButton1
             // 
             resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
@@ -304,16 +314,6 @@ namespace TimeTracker.Form
             this.trackingElapsedTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(158, 0, 1, 10);
             this.trackingElapsedTimeToolStripTextBox.Name = "trackingElapsedTimeToolStripTextBox";
             this.trackingElapsedTimeToolStripTextBox.ReadOnly = true;
-            // 
-            // trackingStartTimeToolStripTextBox
-            // 
-            this.trackingStartTimeToolStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
-            this.trackingStartTimeToolStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            resources.ApplyResources(this.trackingStartTimeToolStripTextBox, "trackingStartTimeToolStripTextBox");
-            this.trackingStartTimeToolStripTextBox.ForeColor = System.Drawing.SystemColors.Window;
-            this.trackingStartTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(5, 20, 1, 10);
-            this.trackingStartTimeToolStripTextBox.Name = "trackingStartTimeToolStripTextBox";
-            this.trackingStartTimeToolStripTextBox.ReadOnly = true;
             // 
             // categoryToolStripComboBox
             // 
@@ -345,6 +345,12 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.panel3, "panel3");
             this.panel3.Name = "panel3";
             // 
+            // profilePictureBox
+            // 
+            resources.ApplyResources(this.profilePictureBox, "profilePictureBox");
+            this.profilePictureBox.Name = "profilePictureBox";
+            this.profilePictureBox.TabStop = false;
+            // 
             // EmployeeName
             // 
             resources.ApplyResources(this.EmployeeName, "EmployeeName");
@@ -356,12 +362,6 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.pictureBox2, "pictureBox2");
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.TabStop = false;
-            // 
-            // profilePictureBox
-            // 
-            resources.ApplyResources(this.profilePictureBox, "profilePictureBox");
-            this.profilePictureBox.Name = "profilePictureBox";
-            this.profilePictureBox.TabStop = false;
             // 
             // Application
             // 
@@ -388,8 +388,8 @@ namespace TimeTracker.Form
             this.toolStripMain.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
