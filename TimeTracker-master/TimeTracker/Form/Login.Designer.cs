@@ -45,9 +45,9 @@ namespace TimeTracker.Form
             this.label1.ForeColor = System.Drawing.SystemColors.InfoText;
             this.label1.Location = new System.Drawing.Point(87, 124);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(196, 29);
+            this.label1.Size = new System.Drawing.Size(201, 29);
             this.label1.TabIndex = 0;
-            this.label1.Text = "ST Time Tracker";
+            this.label1.Text = "Supreme Tracker";
             // 
             // pictureBox1
             // 

@@ -164,5 +164,14 @@ namespace TimeTracker.Utilities
             }
             return dateTime;
         }
+
+        public async Task<EmployeeData> GetEmployeeDetail()
+        {
+            var username = userManager.RetrieveUserInformation().Username;
+            using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
+            {
+                return await db.QuerySingleOrDefaultAsync<EmployeeData>("SELECT EmployeeId, FirstName, LastName, ProfilePicture FROM Employees WHERE Email = @Username", new { Username = username });
+            }
+        }
     }
 }

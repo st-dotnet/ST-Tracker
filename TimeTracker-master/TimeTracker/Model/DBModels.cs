@@ -34,4 +34,12 @@ namespace DBModels.Model
         public string AccessToken { get; set; }
         public DateTimeOffset ExpiresOn { get; set; }
     }
+    public class EmployeeData
+    {
+        public Guid EmployeeId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public byte[] ProfilePicture { get; set; }
+
+    }
 }

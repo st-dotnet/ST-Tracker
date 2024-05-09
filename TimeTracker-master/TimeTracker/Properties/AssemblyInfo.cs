@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Time Tracker")]
+[assembly: AssemblyTitle("Supreme Tracker")]
 [assembly:
     AssemblyDescription(
         "Simple time tracking application made for \"Programming for Windows\" course on University of Finance and Administration, department of Informatics and Mathematics."
     )]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Time Tracker")]
+[assembly: AssemblyProduct("Supreme Tracker")]
 [assembly: AssemblyCopyright("Copyright 2017 Jiří \"Amunak\" Barouš")]
 [assembly: AssemblySourceLink("https://github.com/Amunak/TimeTracker")]
 [assembly:

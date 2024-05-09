@@ -61,6 +61,10 @@ namespace TimeTracker.Form
             this.categoryToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.EmployeeName = new System.Windows.Forms.Label();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.profilePictureBox = new System.Windows.Forms.PictureBox();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -70,6 +74,9 @@ namespace TimeTracker.Form
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.toolStripMain.SuspendLayout();
+            this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStripContainer1
@@ -83,8 +90,8 @@ namespace TimeTracker.Form
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.dataGridViewMain);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip);
-            resources.ApplyResources(this.toolStripContainer1, "toolStripContainer1");
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
+            resources.ApplyResources(this.toolStripContainer1, "toolStripContainer1");
             this.toolStripContainer1.Name = "toolStripContainer1";
             this.toolStripContainer1.RightToolStripPanelVisible = false;
             // 
@@ -255,9 +262,9 @@ namespace TimeTracker.Form
             this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startTrackingToolStripButton,
             this.stopTrackingToolStripButton,
+            this.trackingStartTimeToolStripTextBox,
             this.toolStripButton1,
             this.trackingElapsedTimeToolStripTextBox,
-            this.trackingStartTimeToolStripTextBox,
             this.categoryToolStripComboBox});
             this.toolStripMain.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.toolStripMain.Name = "toolStripMain";
@@ -268,7 +275,7 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.startTrackingToolStripButton, "startTrackingToolStripButton");
             this.startTrackingToolStripButton.BackColor = System.Drawing.Color.Transparent;
             this.startTrackingToolStripButton.ForeColor = System.Drawing.Color.White;
-            this.startTrackingToolStripButton.Margin = new System.Windows.Forms.Padding(45, 10, 0, 2);
+            this.startTrackingToolStripButton.Margin = new System.Windows.Forms.Padding(10, 10, 0, 2);
             this.startTrackingToolStripButton.Name = "startTrackingToolStripButton";
             this.startTrackingToolStripButton.Click += new System.EventHandler(this.startTrackingToolStripButton_Click);
             // 
@@ -276,7 +283,7 @@ namespace TimeTracker.Form
             // 
             resources.ApplyResources(this.stopTrackingToolStripButton, "stopTrackingToolStripButton");
             this.stopTrackingToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.stopTrackingToolStripButton.Margin = new System.Windows.Forms.Padding(10, 10, 0, 2);
+            this.stopTrackingToolStripButton.Margin = new System.Windows.Forms.Padding(5, 10, 0, 2);
             this.stopTrackingToolStripButton.Name = "stopTrackingToolStripButton";
             this.stopTrackingToolStripButton.Click += new System.EventHandler(this.stopTrackingToolStripButton_Click);
             // 
@@ -285,7 +292,7 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton1.ForeColor = System.Drawing.Color.White;
-            this.toolStripButton1.Margin = new System.Windows.Forms.Padding(40, 10, 0, 2);
+            this.toolStripButton1.Margin = new System.Windows.Forms.Padding(5, 10, 0, 0);
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -294,7 +301,7 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.trackingElapsedTimeToolStripTextBox, "trackingElapsedTimeToolStripTextBox");
             this.trackingElapsedTimeToolStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(181)))), ((int)(((byte)(173)))));
             this.trackingElapsedTimeToolStripTextBox.ForeColor = System.Drawing.SystemColors.Window;
-            this.trackingElapsedTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(30, 0, 1, 10);
+            this.trackingElapsedTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(158, 0, 1, 10);
             this.trackingElapsedTimeToolStripTextBox.Name = "trackingElapsedTimeToolStripTextBox";
             this.trackingElapsedTimeToolStripTextBox.ReadOnly = true;
             // 
@@ -304,7 +311,7 @@ namespace TimeTracker.Form
             this.trackingStartTimeToolStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             resources.ApplyResources(this.trackingStartTimeToolStripTextBox, "trackingStartTimeToolStripTextBox");
             this.trackingStartTimeToolStripTextBox.ForeColor = System.Drawing.SystemColors.Window;
-            this.trackingStartTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 1, 10);
+            this.trackingStartTimeToolStripTextBox.Margin = new System.Windows.Forms.Padding(5, 20, 1, 10);
             this.trackingStartTimeToolStripTextBox.Name = "trackingStartTimeToolStripTextBox";
             this.trackingStartTimeToolStripTextBox.ReadOnly = true;
             // 
@@ -313,7 +320,7 @@ namespace TimeTracker.Form
             this.categoryToolStripComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.categoryToolStripComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             resources.ApplyResources(this.categoryToolStripComboBox, "categoryToolStripComboBox");
-            this.categoryToolStripComboBox.Margin = new System.Windows.Forms.Padding(50, 0, 1, 0);
+            this.categoryToolStripComboBox.Margin = new System.Windows.Forms.Padding(50, 10, 1, 0);
             this.categoryToolStripComboBox.Name = "categoryToolStripComboBox";
             this.categoryToolStripComboBox.Sorted = true;
             this.categoryToolStripComboBox.TextUpdate += new System.EventHandler(this.categoryToolStripComboBox_TextUpdate);
@@ -330,11 +337,38 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.notifyIcon, "notifyIcon");
             this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.profilePictureBox);
+            this.panel3.Controls.Add(this.EmployeeName);
+            this.panel3.Controls.Add(this.pictureBox2);
+            resources.ApplyResources(this.panel3, "panel3");
+            this.panel3.Name = "panel3";
+            // 
+            // EmployeeName
+            // 
+            resources.ApplyResources(this.EmployeeName, "EmployeeName");
+            this.EmployeeName.Name = "EmployeeName";
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.BackgroundImage = global::TimeTracker.Properties.Resources.SupremeLogo;
+            resources.ApplyResources(this.pictureBox2, "pictureBox2");
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.TabStop = false;
+            // 
+            // profilePictureBox
+            // 
+            resources.ApplyResources(this.profilePictureBox, "profilePictureBox");
+            this.profilePictureBox.Name = "profilePictureBox";
+            this.profilePictureBox.TabStop = false;
+            // 
             // Application
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "Application";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Application_FormClosing);
@@ -352,6 +386,10 @@ namespace TimeTracker.Form
             this.statusStrip.PerformLayout();
             this.toolStripMain.ResumeLayout(false);
             this.toolStripMain.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -381,6 +419,10 @@ namespace TimeTracker.Form
         private Panel panel2;
         private PictureBox pictureBox1;
         private Label label1;
+        private Panel panel3;
+        private PictureBox pictureBox2;
+        private Label EmployeeName;
+        private PictureBox profilePictureBox;
     }
 }
 

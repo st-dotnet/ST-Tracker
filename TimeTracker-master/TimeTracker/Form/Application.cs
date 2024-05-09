@@ -11,6 +11,7 @@ using TimeTracker.Model;
 using TimeTracker.Properties;
 using TimeTracker.Utilities;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace TimeTracker.Form
 {
@@ -68,6 +69,7 @@ namespace TimeTracker.Form
             RefreshTrackingButtons();
             RefreshEditButtons();
             RefreshStatistics();
+            AssignEmployeeValues();
             this.TopMost = true;
         }
 
@@ -96,7 +98,19 @@ namespace TimeTracker.Form
             this.Text = text;
             notifyIcon.Text = text;
         }
-
+        private async void AssignEmployeeValues()
+        {
+            DBAccessContext dBAccessContext = new DBAccessContext();
+            var employeeData = await dBAccessContext.GetEmployeeDetail();
+            Image profileImage;
+            using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
+            {
+                profileImage = Image.FromStream(ms);
+            }
+            profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            profilePictureBox.Image = profileImage;
+            this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
+        }
         private void RefreshStatistics()
         {
             for (int i = Data.Count - 1; i >= 0; i--)
