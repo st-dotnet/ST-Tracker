@@ -146,7 +146,7 @@ namespace TimeTracker
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            SaveTimerDataAtEveryInterval();
+            await SaveTimerDataAtEveryInterval();
             int keyStrokes = CheckActivity();//Get KeyStrokes
             await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
             idleCheckAfter1Min(keyStrokes);

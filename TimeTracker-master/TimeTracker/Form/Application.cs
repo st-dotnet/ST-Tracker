@@ -102,13 +102,16 @@ namespace TimeTracker.Form
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             var employeeData = await dBAccessContext.GetEmployeeDetail();
-            Image profileImage;
-            using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
+            if (employeeData.ProfilePicture != null && employeeData.ProfilePicture.Length > 0)
             {
-                profileImage = Image.FromStream(ms);
+                Image profileImage;
+                using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
+                {
+                    profileImage = Image.FromStream(ms);
+                }
+                profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                profilePictureBox.Image = profileImage;
             }
-            profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            profilePictureBox.Image = profileImage;
             this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
         }
         private void RefreshStatistics()

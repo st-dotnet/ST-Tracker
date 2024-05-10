@@ -68,20 +68,9 @@
 		</DirectoryRef>
 		<DirectoryRef Id="StartupShortcutDirectory">
 			<Component Id="StartupShortcut" Guid="cc07c6ae-d6a3-4ebb-93d1-a061937d8a67">
-				<Shortcut Id="ApplicationStartupShortcut"
-						  Name="STTimeTracker"
-						  Description="STTimeTracker"
-						  Target="[INSTALLFOLDER]timetracker.exe"
-						  WorkingDirectory="INSTALLFOLDER"
-						  Directory="ApplicationProgramsFolder" />
-				<RegistryKey Root="HKCU"
-							 Key="Software\Microsoft\Windows\CurrentVersion\Run"
-							 ForceCreateOnInstall="yes">
-					<RegistryValue Id="STTimeTrackerStartup"
-								   Name="STTimeTracker"
-								   Value="[INSTALLFOLDER]timetracker.exe"
-								   Type="string"
-								   KeyPath="yes" />
+				<Shortcut Id="ApplicationStartupShortcut" Name="STTimeTracker" Description="STTimeTracker" Target="[INSTALLFOLDER]timetracker.exe" WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" />
+				<RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run" ForceCreateOnInstall="yes">
+					<RegistryValue Id="STTimeTrackerStartup" Name="STTimeTracker" Value="[INSTALLFOLDER]timetracker.exe" Type="string" KeyPath="yes" />
 				</RegistryKey>
 			</Component>
 		</DirectoryRef>
@@ -92,6 +81,15 @@
 				<CreateFolder>
 					<Permission User="Everyone" GenericAll="yes" />
 				</CreateFolder>
+			</Component>
+			<Component Id="AForge.Video.dll" Guid="96d5ad63-fd94-4156-8033-a3b2d77a4bf0">
+			  <File Id="AForge.Video.dll" Name="AForge.Video.dll" Source="$(var.TimeTracker_TargetDir)AForge.Video.dll" />
+			</Component>
+			<Component Id="AForge.dll" Guid="1ab83def-2cc6-424e-aad1-626e018c61a5">
+			  <File Id="AForge.dll" Name="AForge.dll" Source="$(var.TimeTracker_TargetDir)AForge.dll" />
+			</Component>
+			<Component Id="AForge.Video.DirectShow.dll" Guid="805b2251-3c13-44a3-8c96-da1e29bdb646">
+			  <File Id="AForge.Video.DirectShow.dll" Name="AForge.Video.DirectShow.dll" Source="$(var.TimeTracker_TargetDir)AForge.Video.DirectShow.dll" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>
