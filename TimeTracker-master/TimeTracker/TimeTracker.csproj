@@ -59,7 +59,7 @@
     <StartupObject>TimeTracker.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\images\2.png" />
+    <Content Include="Icon.ico" />
     <Content Include="Images\clock.ico" />
     <Content Include="Images\clock.svg" />
     <Content Include="logo.ico" />

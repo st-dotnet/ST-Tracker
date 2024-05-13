@@ -338,8 +338,8 @@ namespace TimeTracker
             {
                 await _application.Pause_Tracking();
                 _application.ShowIdleAlert();
-                IntPtr handle = _application.Handle;
-                SetForegroundWindow(handle);
+                //IntPtr handle = _application.Handle;
+                //SetForegroundWindow(handle);
             }
         }
         //Idle Check -----------------------------------------------

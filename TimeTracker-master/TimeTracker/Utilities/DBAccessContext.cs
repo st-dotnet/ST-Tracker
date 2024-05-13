@@ -173,5 +173,16 @@ namespace TimeTracker.Utilities
                 return await db.QuerySingleOrDefaultAsync<EmployeeData>("SELECT EmployeeId, FirstName, LastName, ProfilePicture FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
             }
         }
+        public async Task<TimeSpan> GetTotalTime()
+        {
+            var dateTime = GetPreviousDate();
+            var empId = await GetEmployeeId("");
+            var trackerData = await CheckTrackingExists(dateTime.Date, empId);
+            if(trackerData != null)
+            {
+                return trackerData.TotalTime;
+            }
+            return TimeSpan.Zero;
+        }
     }
 }

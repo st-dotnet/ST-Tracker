@@ -12,6 +12,8 @@ using TimeTracker.Properties;
 using TimeTracker.Utilities;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace TimeTracker.Form
 {
@@ -69,6 +71,7 @@ namespace TimeTracker.Form
             RefreshTrackingButtons();
             RefreshEditButtons();
             RefreshStatistics();
+            SetTotalTime();
             AssignEmployeeValues();
             this.TopMost = true;
         }
@@ -114,6 +117,13 @@ namespace TimeTracker.Form
             }
             this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
         }
+
+        private async void SetTotalTime()
+        {
+            DBAccessContext dBAccessContext = new DBAccessContext();
+            var totalTime = await dBAccessContext.GetTotalTime();
+            this.statsTotalText.Text = String.Format(Properties.Resources.Application_statsTotal_Text, totalTime.Format());
+        }
         private void RefreshStatistics()
         {
             for (int i = Data.Count - 1; i >= 0; i--)
@@ -123,8 +133,6 @@ namespace TimeTracker.Form
                     Data.RemoveAt(i);
                 }
             }
-            TimeSpan statTotal = Data.Sum(value => value.GetTimeElapsed());
-            this.statsTotalText.Text = String.Format(Properties.Resources.Application_statsTotal_Text, statTotal.Format());
 
             DataGridView grid = this.dataGridViewMain;
 
@@ -246,6 +254,7 @@ namespace TimeTracker.Form
             TrackingService.Start();
             RefreshTimer.Start();
             RefreshTrackingButtons();
+            SetTotalTime();
             this.trackingStartTimeToolStripTextBox.Text = TrackingService.StartTime.LocalDateTime.ToString("h\\:mm\\:ss");
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
             this.panel1.Visible = false;
@@ -273,6 +282,7 @@ namespace TimeTracker.Form
             RefreshCategoryPicker();
             TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
             await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+            SetTotalTime();
         }
 
         private void RefreshTrackingButtons()
@@ -343,7 +353,7 @@ namespace TimeTracker.Form
         /// </summary>
         private void Open()
         {
-            SaveIfNecessary();
+            //SaveIfNecessary();
 
             OpenFileDialog dialog = new OpenFileDialog
             {
@@ -451,10 +461,10 @@ namespace TimeTracker.Form
             {
                 await stopTracking();
             }
-            if (SaveIfNecessary() == DialogResult.Cancel)
-            {
-                e.Cancel = true;
-            }
+            //if (SaveIfNecessary() == DialogResult.Cancel)
+            //{
+            //    e.Cancel = true;
+            //}
             else
             {
                 SaveSettings();
@@ -493,7 +503,7 @@ namespace TimeTracker.Form
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveIfNecessary();
+            //SaveIfNecessary();
             Data.Clear();
 
             // No need to close handles here, FileInfo doesn't use them
@@ -637,17 +647,48 @@ namespace TimeTracker.Form
                 TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
                 await dBAccessContext.AddUpdateTrackerInfo(statTotal);
             }
-
+            SetTotalTime();
             // No need to close handles here, FileInfo doesn't use them
             file = null;
             isSaved = true;
             RefreshEditButtons();
             RefreshTitle();
         }
+       
+        private const int SW_RESTORE = 9;
         public void ShowIdleAlert()
         {
+            SetTotalTime();
             this.panel1.Visible = true;
             this.panel2.Visible = false;
+            SetApplicationToFront();
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+        private void SetApplicationToFront()
+        {
+            Process[] processes = Process.GetProcessesByName("timetracker");
+
+            if (processes.Length > 0)
+            {
+                Process targetProcess = processes[0];
+                IntPtr mainWindowHandle = targetProcess.MainWindowHandle;
+
+                if (mainWindowHandle != IntPtr.Zero)
+                {
+                    if (IsIconic(mainWindowHandle))
+                    {
+                        ShowWindow(mainWindowHandle, SW_RESTORE);
+                    }
+
+                    SetForegroundWindow(mainWindowHandle);
+                }
+            }
         }
     }
 }
