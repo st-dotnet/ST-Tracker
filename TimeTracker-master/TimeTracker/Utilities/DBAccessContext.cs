@@ -109,7 +109,7 @@ namespace TimeTracker.Utilities
 
         }
 
-        public async Task StoreTrackerDataToDB(TimeSpan statTotal)
+        private async Task StoreTrackerDataToDB(TimeSpan statTotal)
         {
             UserInformation userInfo = userManager.RetrieveUserInformation();
             var dateTime = GetPreviousDate();
@@ -145,15 +145,21 @@ namespace TimeTracker.Utilities
             }
             catch (SqlException ex)
             {
-                TrackerDataOffline newDataOffline = new TrackerDataOffline
-                {
-                    TrackerId = Guid.NewGuid(),
-                    Date = dateTime.Date,
-                    TotalTime = statTotal,
-                    EmployeeUsername = userInfo.Username,
-                };
-                offlineTrackerDataManager.SaveTrackerDataOffline(newDataOffline);
+                
             }
+        }
+        public async Task StoreTrackerDataToLocal(TimeSpan statTotal)
+        {
+            UserInformation userInfo = userManager.RetrieveUserInformation();
+            var dateTime = GetPreviousDate();
+            TrackerDataOffline newDataOffline = new TrackerDataOffline
+            {
+                TrackerId = Guid.NewGuid(),
+                Date = dateTime.Date,
+                TotalTime = statTotal,
+                EmployeeUsername = userInfo.Username,
+            };
+            offlineTrackerDataManager.SaveTrackerDataOffline(newDataOffline);
         }
         private DateTime GetPreviousDate()
         {

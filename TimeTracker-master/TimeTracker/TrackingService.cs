@@ -10,7 +10,7 @@ using TimeTracker.Model;
 using TimeTracker.Utilities;
 using AForge.Video.DirectShow;
 using System.Drawing.Imaging;
-using System.Text.RegularExpressions;
+using System.Net.NetworkInformation;
 
 namespace TimeTracker
 {
@@ -78,6 +78,7 @@ namespace TimeTracker
         /// <returns></returns>
         public DateTimeOffset Start()
         {
+            CheckInternetConnected();
             if (Tracking)
             {
                 throw new TrackingServiceException("Tracking has already started.");
@@ -151,11 +152,44 @@ namespace TimeTracker
             await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
             idleCheckAfter1Min(keyStrokes);
         }
+        public async Task<bool> CheckInternetConnected()
+        {
+            var internetAvailable = false;
+            if (IsInternetAvailable())
+            {
+                internetAvailable = true;
+            }
+            _application.InternetStatus(internetAvailable);
+            return internetAvailable;
+        }
+        private static bool IsInternetAvailable()
+        {
+            try
+            {
+                using (var ping = new Ping())
+                {
+                    var result = ping.Send("8.8.8.8", 2000);
+                    return (result.Status == IPStatus.Success);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         private async Task SaveTimerDataAtEveryInterval()
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             TimeSpan elapsedTime = GetIntervalTimeElasped();
-            await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
+            var internetAvailavble = await CheckInternetConnected();
+            if(internetAvailavble)
+            {
+                await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
+            }
+            else
+            {
+                await dBAccessContext.StoreTrackerDataToLocal(elapsedTime);
+            }
             this.StartTimeInterval = DateTimeOffset.Now;
         }
         private async Task Captures(int keyStrokes)

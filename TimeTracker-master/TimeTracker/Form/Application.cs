@@ -67,6 +67,7 @@ namespace TimeTracker.Form
 
             this.Refresh();
             Data.ListChanged += new ListChangedEventHandler(DataListChanged);
+            TrackingService.CheckInternetConnected();
             RefreshTitle();
             RefreshTrackingButtons();
             RefreshEditButtons();
@@ -267,6 +268,7 @@ namespace TimeTracker.Form
         }
         public async Task Pause_Tracking()
         {
+            TrackingService.CheckInternetConnected();
             DBAccessContext dBAccessContext = new DBAccessContext();
             RefreshTimer.Stop();
 
@@ -648,6 +650,7 @@ namespace TimeTracker.Form
                 await dBAccessContext.AddUpdateTrackerInfo(statTotal);
             }
             SetTotalTime();
+            TrackingService.CheckInternetConnected();
             // No need to close handles here, FileInfo doesn't use them
             file = null;
             isSaved = true;
@@ -659,6 +662,7 @@ namespace TimeTracker.Form
         public void ShowIdleAlert()
         {
             SetTotalTime();
+            TrackingService.CheckInternetConnected();
             this.panel1.Visible = true;
             this.panel2.Visible = false;
             SetApplicationToFront();
@@ -688,6 +692,20 @@ namespace TimeTracker.Form
 
                     SetForegroundWindow(mainWindowHandle);
                 }
+            }
+        }
+
+        public void InternetStatus(bool isAvailable)
+        {
+            if (isAvailable)
+            {
+                this.internetStatus.Text = "Connected";
+                this.internetStatus.BackColor = Color.FromArgb(31, 181, 173);
+            }
+            else
+            {
+                this.internetStatus.Text = "No Internet, still tracking!";
+                this.internetStatus.BackColor = Color.FromArgb(234, 31, 75);
             }
         }
     }
