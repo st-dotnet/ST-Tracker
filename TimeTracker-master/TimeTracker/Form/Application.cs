@@ -26,7 +26,6 @@ namespace TimeTracker.Form
         private Timer RefreshTimer;
         private ToolTip toolTip = new ToolTip();
         private FileInfo file;
-        private bool isSaved = true;
         private TimeSpan totalTimeToShow;
         private const int SW_RESTORE = 9;
 
@@ -72,15 +71,10 @@ namespace TimeTracker.Form
         private void RefreshTitle()
         {
             var text = ProductName;
-            if (file != null && file.Exists && file.Name.Length > 0)
-            {
-                var modifier = isSaved ? "" : "*";
-                text = String.Format("{1}{2} - {0}", text, file.Name, modifier);
-            }
-
             this.Text = text;
             notifyIcon.Text = text;
         }
+
         #region Set Employee Data
         private async void AssignEmployeeValues()
         {
@@ -161,8 +155,6 @@ namespace TimeTracker.Form
 
         private void DataListChanged(object sender, ListChangedEventArgs e)
         {
-            isSaved = false;
-            RefreshTitle();
             RefreshStatistics();
         }
 
@@ -260,8 +252,6 @@ namespace TimeTracker.Form
             SetTotalTime();
             // No need to close handles here, FileInfo doesn't use them
             file = null;
-            isSaved = true;
-            RefreshTitle();
         }
         #endregion
 
