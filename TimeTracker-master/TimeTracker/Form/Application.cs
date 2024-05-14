@@ -19,8 +19,6 @@ namespace TimeTracker.Form
 {
     public partial class Application : System.Windows.Forms.Form
     {
-        const String FILE_EXT = "timetracker";
-        const String FILE_NAME = "table";
         const int CATEGORY_MAXLENGTH = 255;
         private BindingList<TimeTrackerData> Data;
         private TrackingService TrackingService;
@@ -28,74 +26,52 @@ namespace TimeTracker.Form
         private Timer RefreshTimer;
         private ToolTip toolTip = new ToolTip();
         private FileInfo file;
-        private static readonly CultureInfo defaultCulture = CultureInfo.CurrentCulture;
         private bool isSaved = true;
         private TimeSpan totalTimeToShow;
-   
+        private const int SW_RESTORE = 9;
+
+        //To show application on Front
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
         public Application()
         {
+            TrackingService = new TrackingService(this);
+            InternetManager = new InternetManager(this);
+
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             Data = new BindingList<TimeTrackerData>();
-
-            TrackingService = new TrackingService(this);
-
             RefreshTimer = new Timer
             {
                 Interval = 100
             };
             RefreshTimer.Tick += new System.EventHandler(RefreshTrackingInfo);
 
-#if false
-            // Test data
-            TrackedDataCategory cat = new TrackedDataCategory("TestCat");
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddHours(14), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddDays(14), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddDays(14).AddMinutes(8), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddHours(2).AddSeconds(66), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddSeconds(81), cat));
-#endif
-
             InitializeComponent();
             TrackingService.InitializeHooks();
-            InternetManager = new InternetManager(this);
             InternetManager.InternetCheckInitialize();
-            // TODO: Finish add and copy buttons
-            // Remove not implemented buttons
             this.toolStripMain.Items.RemoveByKey("addToolStripButton");
             this.toolStripMain.Items.RemoveByKey("copyToolStripButton");
-
             this.dataGridViewMain.DataSource = Data;
             this.categoryToolStripComboBox.MaxLength = CATEGORY_MAXLENGTH;
-
             this.Refresh();
             Data.ListChanged += new ListChangedEventHandler(DataListChanged);
             RefreshTitle();
             RefreshTrackingButtons();
-            RefreshEditButtons();
             RefreshStatistics();
-            SetTotalTime();
             AssignEmployeeValues();
+            SetTotalTime();
             this.TopMost = true;
         }
      
-        private void SaveSettings()
-        {
-            // Settings.Default.alwaysOnTop = this.alwaysOnTopToolStripMenuItem.Checked;
-            // Settings.Default.showInTaskbar = this.showInTaskbarToolStripMenuItem.Checked;
-            // Settings.Default.showInNotificationArea = this.showInNotificationAreaToolStripMenuItem.Checked;
-
-            Settings.Default.Save();
-        }
-
-        /// <summary>
-        /// Sets application title dynamically
-        /// </summary>
         private void RefreshTitle()
         {
             var text = ProductName;
-
             if (file != null && file.Exists && file.Name.Length > 0)
             {
                 var modifier = isSaved ? "" : "*";
@@ -105,6 +81,7 @@ namespace TimeTracker.Form
             this.Text = text;
             notifyIcon.Text = text;
         }
+        #region Set Employee Data
         private async void AssignEmployeeValues()
         {
             bool isInternet = await InternetManager.CheckInternetConnected();
@@ -125,6 +102,7 @@ namespace TimeTracker.Form
                 this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
             }
         }
+        #endregion
 
         private async void SetTotalTime()
         {
@@ -181,11 +159,6 @@ namespace TimeTracker.Form
             }
         }
 
-        /// <summary>
-        /// Called on data list change
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void DataListChanged(object sender, ListChangedEventArgs e)
         {
             isSaved = false;
@@ -193,73 +166,22 @@ namespace TimeTracker.Form
             RefreshStatistics();
         }
 
+        //private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        //{
+        //    System.Windows.Forms.Application.Exit();
+        //}
 
-        /// <summary>
-        /// Exit application when user clicks on File > Exit
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            System.Windows.Forms.Application.Exit();
-
-        }
-
-        /// <summary>
-        /// Display "about" dialog box
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AboutBox aboutBox = new AboutBox();
-            aboutBox.ShowDialog();
-        }
+        //private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        //{
+        //    AboutBox aboutBox = new AboutBox();
+        //    aboutBox.ShowDialog();
+        //}
 
         private void dataGridViewMain_SelectionChanged(object sender, EventArgs e)
         {
-            RefreshEditButtons();
             RefreshStatistics();
         }
-
-        /// <summary>
-        /// Refreshes grid edit buttons when necessary to reflect options available to do with that data
-        /// </summary>
-        private void RefreshEditButtons()
-        {
-            DataGridView grid = this.dataGridViewMain;
-            var count = grid.SelectedRows.Count;
-
-            // Decide on delete button
-            if (count < 1)
-            {
-                //  deleteToolStripButton.Enabled = false;
-            }
-            else
-            {
-                // deleteToolStripButton.Enabled = true;
-            }
-        }
-
-        private void deleteToolStripButton_Click(object sender, EventArgs e)
-        {
-            DataGridView grid = this.dataGridViewMain;
-            var count = grid.SelectedRows.Count;
-
-            var result = MessageBox.Show(this, String.Format(Properties.Resources.Application_deleteMessageBox_Message, count),
-                Resources.Application_deleteMessageBox_Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (result == DialogResult.Yes)
-            {
-                foreach (DataGridViewRow selectedRow in grid.SelectedRows)
-                {
-                    Data.Remove(selectedRow.DataBoundItem as TimeTrackerData);
-                }
-                RefreshCategoryPicker();
-            }
-
-        }
-
+        #region Start / Pause / PunchOut
         private async void startTrackingToolStripButton_Click(object sender, EventArgs e)
         {
             TrackingService.Start();
@@ -304,6 +226,45 @@ namespace TimeTracker.Form
             SetTotalTime();
         }
 
+        private async void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            await stopTracking();
+        }
+        private async Task stopTracking()
+        {
+            DBAccessContext dBAccessContext = new DBAccessContext();
+            TimeTrackerData item = TrackingService.Stop();
+            RefreshTimer.Stop();
+            RefreshTrackingButtons();
+            RefreshCategoryPicker();
+            this.panel1.Visible = false;
+            this.panel2.Visible = true;
+            this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
+            this.categoryToolStripComboBox.Items.Clear();
+            this.categoryToolStripComboBox.Text = "";
+            this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
+            Data.Clear();
+            var internetAvailable = await InternetManager.CheckInternetConnected();
+            if (item != null)
+            {
+                TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
+                if (internetAvailable)
+                {
+                    await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+                }
+                else
+                {
+                    await dBAccessContext.StoreTrackerDataToLocal(statTotal);
+                }
+            }
+            SetTotalTime();
+            // No need to close handles here, FileInfo doesn't use them
+            file = null;
+            isSaved = true;
+            RefreshTitle();
+        }
+        #endregion
+
         private void RefreshTrackingButtons()
         {
             var tracking = TrackingService.Tracking;
@@ -317,162 +278,6 @@ namespace TimeTracker.Form
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
         }
 
-        /// <summary>
-        /// Saves the current table to file
-        /// </summary>
-        /// <param name="forceOpenSaveWindow">Whether to open the save dialogue even when the target path is already known</param>
-        private void Save(bool forceOpenSaveWindow = false)
-        {
-            if (forceOpenSaveWindow || file == null)
-            {
-                SaveFileDialog dialog = new SaveFileDialog
-                {
-                    OverwritePrompt = true,
-                    RestoreDirectory = true,
-                    DefaultExt = FILE_EXT,
-                    FileName = "table",
-                    Filter = String.Format("TimeTracker files (*.{0})|*.{0}|All files (*.*)|*.*", FILE_EXT),
-
-                    // use directory with "current" file if available
-                    InitialDirectory = file == null ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : file.DirectoryName
-                };
-
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    file = new FileInfo(dialog.FileName);
-                }
-            }
-
-            if (file != null)
-            {
-                StreamWriter fs = null;
-                try
-                {
-                    file.Delete();
-                    fs = file.AppendText();
-                    fs.Write(DataSerializer.Serialize(Data));
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show(this, Properties.Resources.Application_fileErrorMessageBox_Message,
-                    Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    return;
-                }
-                finally
-                {
-                    fs.Close();
-                }
-                isSaved = true;
-            }
-            RefreshTitle();
-        }
-
-        /// <summary>
-        /// Opens an existing file with table data
-        /// </summary>
-        private void Open()
-        {
-            //SaveIfNecessary();
-
-            OpenFileDialog dialog = new OpenFileDialog
-            {
-                RestoreDirectory = true,
-                DefaultExt = FILE_EXT,
-                FileName = FILE_NAME,
-                Filter = String.Format("TimeTracker files (*.{0})|*.{0}|All files (*.*)|*.*", FILE_EXT),
-
-                // use directory with "current" file if available
-                InitialDirectory = file == null ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : file.DirectoryName
-            };
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                file = new FileInfo(dialog.FileName);
-            }
-
-            if (file != null)
-            {
-                if (!file.Exists)
-                {
-                    MessageBox.Show(this, Resources.Application_nonexistentFileMessageBox_Message,
-                    Resources.Application_nonexistentFileMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                StreamReader fs = null;
-                try
-                {
-                    Data.Clear();
-                    fs = file.OpenText();
-
-                    string line;
-                    while ((line = fs.ReadLine()) != null)
-                    {
-                        TimeTrackerData value = DataSerializer.DeserializeValue(line, CATEGORY_MAXLENGTH);
-                        Data.Add(value);
-                    }
-                }
-                catch (DeserializationException)
-                {
-                    MessageBox.Show(this, Resources.Application_fileErrorMessageBox_Message,
-                    Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-
-                    file = null;
-
-                    return;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show(this, Resources.Application_fileErrorMessageBox_Message,
-                    Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    return;
-                }
-                finally
-                {
-                    fs.Close();
-                }
-                isSaved = true;
-            }
-            RefreshTitle();
-            RefreshCategoryPicker();
-        }
-
-        /// <summary>
-        /// Checks whether there are any changes to the table, offering the user the option to save them
-        /// </summary>
-        /// <returns></returns>
-        private DialogResult SaveIfNecessary()
-        {
-            if (SaveAvailable())
-            {
-                var result = MessageBox.Show(this, Properties.Resources.Application_unsavedMessageBox_Message,
-                    Resources.Application_unsavedMessageBox_Caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-
-                if (result == DialogResult.Yes)
-                {
-                    Save();
-                }
-
-                return result;
-            }
-
-            return DialogResult.Abort;
-        }
-
-        /// <summary>
-        /// Checks whether save should be available
-        /// </summary>
-        /// <returns></returns>
-        private bool SaveAvailable()
-        {
-            return !isSaved && Data.Count > 0;
-        }
-
-        /// <summary>
-        /// Application closing event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void Application_FormClosing(object sender, FormClosingEventArgs e)
         {
             var tracking = TrackingService.Tracking;
@@ -480,20 +285,8 @@ namespace TimeTracker.Form
             {
                 await stopTracking();
             }
-            //if (SaveIfNecessary() == DialogResult.Cancel)
-            //{
-            //    e.Cancel = true;
-            //}
-            else
-            {
-                SaveSettings();
-            }
         }
 
-        /// <summary>
-        /// Collects all categories from the data set and returns a unique set
-        /// </summary>
-        /// <returns>The set of categories</returns>
         private HashSet<TrackedDataCategory> GetUsedCategories()
         {
             var result = new HashSet<TrackedDataCategory>();
@@ -510,9 +303,6 @@ namespace TimeTracker.Form
             return result;
         }
 
-        /// <summary>
-        /// Updates the category picker with newly-collected categories
-        /// </summary>
         private void RefreshCategoryPicker()
         {
             var items = this.categoryToolStripComboBox.Items;
@@ -520,63 +310,6 @@ namespace TimeTracker.Form
             items.AddRange(GetUsedCategories().ToArray());
         }
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //SaveIfNecessary();
-            Data.Clear();
-
-            // No need to close handles here, FileInfo doesn't use them
-            file = null;
-            isSaved = true;
-
-            RefreshEditButtons();
-            RefreshTitle();
-        }
-
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // It turns out that the "new" action does exactly the same as the "close" action
-            closeToolStripMenuItem_Click(sender, e);
-        }
-
-        private void newToolStripButton_Click(object sender, EventArgs e)
-        {
-            // shortcut for the "new" menu item
-            newToolStripMenuItem_Click(sender, e);
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Save();
-        }
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Open();
-        }
-
-        private void openToolStripButton_Click(object sender, EventArgs e)
-        {
-            // shortcut for the "open" menu item
-            openToolStripMenuItem_Click(sender, e);
-        }
-
-        private void saveToolStripButton_Click(object sender, EventArgs e)
-        {
-            // shortcut for the "save" menu item
-            saveToolStripMenuItem_Click(sender, e);
-        }
-
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Save(true);
-        }
-
-        /// <summary>
-        /// Draws a custom message inside the grid view when it's empty
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void dataGridViewMain_Paint(object sender, PaintEventArgs e)
         {
             DataGridView grid = (DataGridView)sender;
@@ -643,46 +376,6 @@ namespace TimeTracker.Form
             }
         }
 
-        private async void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            await stopTracking();
-        }
-        private async Task stopTracking()
-        {
-            DBAccessContext dBAccessContext = new DBAccessContext();
-            TimeTrackerData item = TrackingService.Stop();
-            RefreshTimer.Stop();
-            RefreshTrackingButtons();
-            RefreshCategoryPicker();
-            this.panel1.Visible = false;
-            this.panel2.Visible = true;
-            this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
-            this.categoryToolStripComboBox.Items.Clear();
-            this.categoryToolStripComboBox.Text = "";
-            this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
-            Data.Clear();
-            var internetAvailable = await InternetManager.CheckInternetConnected();
-            if (item != null)
-            {
-                TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
-                if (internetAvailable)
-                {
-                    await dBAccessContext.AddUpdateTrackerInfo(statTotal);
-                }
-                else
-                {
-                    await dBAccessContext.StoreTrackerDataToLocal(statTotal);
-                }
-            }
-            SetTotalTime();
-            // No need to close handles here, FileInfo doesn't use them
-            file = null;
-            isSaved = true;
-            RefreshEditButtons();
-            RefreshTitle();
-        }
-
-        private const int SW_RESTORE = 9;
         public void ShowIdleAlert()
         {
             SetTotalTime();
@@ -690,13 +383,6 @@ namespace TimeTracker.Form
             this.panel2.Visible = false;
             SetApplicationToFront();
         }
-
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        private static extern bool IsIconic(IntPtr hWnd);
         private void SetApplicationToFront()
         {
             Process[] processes = Process.GetProcessesByName("timetracker");

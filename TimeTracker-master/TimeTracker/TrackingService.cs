@@ -9,14 +9,9 @@ using System.Windows.Forms;
 using TimeTracker.Model;
 using TimeTracker.Utilities;
 using AForge.Video.DirectShow;
-using System.Drawing.Imaging;
-using System.Net.NetworkInformation;
 
 namespace TimeTracker
 {
-    /// <summary>
-    /// A helper service managing tracking
-    /// </summary>
     public class TrackingService
     {
         private readonly TimeTracker.Form.Application _application;
@@ -24,7 +19,9 @@ namespace TimeTracker
         {
             _application = application;
         }
-        //Activity Check -----------------------------------------------
+
+        #region Activity Check Fields
+
         private const int WH_KEYBOARD_LL = 13;
         private const int WH_MOUSE_LL = 14;
         private const int WM_KEYDOWN = 0x0100;
@@ -40,23 +37,13 @@ namespace TimeTracker
         private int keystrokeCount = 0;
         private int mouseClickCount = 0;
         private int mouseWheelCount = 0;
+        #endregion
 
-        private const int ActivityThreshold = 80; // Adjust this threshold as needed
-        //// Define your dialog here
-        //private LowActivityDialog lowActivityDialog;
-        //Activity Check -----------------------------------------------
+        public bool Tracking { get; private set; }
         private DateTimeOffset _startTime;
         private DateTimeOffset StartTimeInterval;
         private System.Windows.Forms.Timer timer;
 
-        /// <summary>
-        /// Stores whether we are currently tracking
-        /// </summary>
-        public bool Tracking { get; private set; }
-
-        /// <summary>
-        /// Returns tracking start time
-        /// </summary>
         public DateTimeOffset StartTime
         {
             get
@@ -72,10 +59,6 @@ namespace TimeTracker
             private set { _startTime = value; }
         }
 
-        /// <summary>
-        /// Starts tracking
-        /// </summary>
-        /// <returns></returns>
         public DateTimeOffset Start()
         {
             if (Tracking)
@@ -99,16 +82,11 @@ namespace TimeTracker
             return this.StartTime;
         }
 
-        /// <summary>
-        /// Stops tracking
-        /// </summary>
-        /// <returns>The resulting TimeTrackerData</returns>
         public TimeTrackerData Stop()
         {
             if (!Tracking)
             {
                 return null;
-                //throw new TrackingServiceException("Tracking was not started.");
             }
 
             this.Tracking = false;
@@ -117,9 +95,6 @@ namespace TimeTracker
             return new TimeTrackerData(_startTime, DateTimeOffset.Now);
         }
 
-        /// <summary>
-        /// Returns the elapsed time since tracking started
-        /// </summary>
         public String Elapsed
         {
             get
@@ -160,12 +135,12 @@ namespace TimeTracker
                 await SaveTimerDataAtEveryInterval(false);
             }
         }
-       
+
         private async Task SaveTimerDataAtEveryInterval(bool isStoreToDB)
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             TimeSpan elapsedTime = GetIntervalTimeElasped();
-            if(isStoreToDB)
+            if (isStoreToDB)
             {
                 await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
             }
@@ -175,6 +150,7 @@ namespace TimeTracker
             }
             this.StartTimeInterval = DateTimeOffset.Now;
         }
+
         private async Task Captures(int keyStrokes)
         {
             Bitmap cameraCapture = await CapturePhotoAsync();
@@ -185,6 +161,7 @@ namespace TimeTracker
             Bitmap screenshot = CaptureScreen();
             await SaveCaptures(screenshot, keyStrokes, false);
         }
+
         private async Task SaveCaptures(Bitmap screenshot, int? keyStrokes, bool isCameraCapture)
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
@@ -196,15 +173,13 @@ namespace TimeTracker
             }
             await dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes, isCameraCapture);
         }
+
         public TimeSpan GetIntervalTimeElasped()
         {
             TimeSpan elapsedTime = DateTimeOffset.Now - StartTimeInterval;
             return elapsedTime;
         }
-        /// <summary>
-        /// Capture screenshot
-        /// </summary>
-        /// <returns></returns>
+
         public Bitmap CaptureScreen()
         {
             Rectangle bounds = Screen.PrimaryScreen.Bounds;
@@ -215,6 +190,7 @@ namespace TimeTracker
             }
             return bitmap;
         }
+
         static async Task<Bitmap> CapturePhotoAsync()
         {
             FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -243,15 +219,8 @@ namespace TimeTracker
             }
             return null;
         }
-            private static void VideoSource_NewFrame(Bitmap bitmap)
-        {
-            string screenshotFolderPath = @"D:/Screenshots"; // Change this to your desired folder path
-            string fileName = $"screenshot_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.jpg"; // Change the extension to match your desired format
-            string filePath = System.IO.Path.Combine(screenshotFolderPath, fileName);
-            bitmap.Save(filePath, ImageFormat.Jpeg);
-        }
 
-        //Activity Check -----------------------------------------------
+        #region Activity Check Methods/Code
         public void InitializeHooks()
         {
             _keyboardProc = HookCallbackKeyboard;
@@ -297,10 +266,6 @@ namespace TimeTracker
         }
         public int CheckActivity(bool is1MinCheck = false)
         {
-            //if (keystrokeCount <= ActivityThreshold || mouseClickCount <= ActivityThreshold)
-            //{
-            //    Console.WriteLine("------------------------------");
-            //}
             var totalKeyStrokeCount = keystrokeCount + mouseClickCount + mouseWheelCount;
             // Reset counters for next interval
             if (!is1MinCheck)
@@ -316,19 +281,9 @@ namespace TimeTracker
             mouseClickCount = 0;
             mouseWheelCount = 0;
         }
-        //protected override void OnFormClosing(FormClosingEventArgs e)
-        //{
-        //    base.OnFormClosing(e);
-        //    UnhookWindowsHookEx(_keyboardHookID);
-        //    UnhookWindowsHookEx(_mouseHookID);
-        //}
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr SetWindowsHookEx(int idHook, Delegate lpfn, IntPtr hMod, uint dwThreadId);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
@@ -338,10 +293,9 @@ namespace TimeTracker
 
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-        //Activity Check -----------------------------------------------
-        //Idle Check -----------------------------------------------
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        #endregion
+
+        #region Idle Time Detection Code
         private async void idleCheckAfter1Min(int oldKeyStrokes)
         {
             await Task.Delay(TimeSpan.FromMinutes(1));
@@ -355,16 +309,11 @@ namespace TimeTracker
             {
                 await _application.Pause_Tracking();
                 _application.ShowIdleAlert();
-                //IntPtr handle = _application.Handle;
-                //SetForegroundWindow(handle);
             }
         }
-        //Idle Check -----------------------------------------------
+        #endregion
     }
 
-    /// <summary>
-    /// Tracking Service Exception
-    /// </summary>
     public class TrackingServiceException : Exception
     {
         /// <summary>

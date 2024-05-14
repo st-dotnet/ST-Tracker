@@ -2,8 +2,6 @@
 using Microsoft.Identity.Client;
 using System;
 using System.IO;
-using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace TimeTracker.Utilities
@@ -16,6 +14,7 @@ namespace TimeTracker.Utilities
         {
             _filePath = filePath;
         }
+        #region User Manager XML
         public void SaveUserInformation(AuthenticationResult result, Guid? empId)
         {
             if (File.Exists(_filePath))
@@ -76,7 +75,9 @@ namespace TimeTracker.Utilities
 
             return null;
         }
-        //---------------------OFFLINE DATA--------------------------------
+        #endregion
+
+        #region Local Tracker Data XML
         public void SaveTrackerDataOffline(TrackerDataOffline result)
         {
             if (File.Exists(_filePath))
@@ -139,7 +140,6 @@ namespace TimeTracker.Utilities
                 File.Delete(_filePath);
             }
         }
-        //---------------------OFFLINE DATA--------------------------------
+        #endregion
     }
 }
-

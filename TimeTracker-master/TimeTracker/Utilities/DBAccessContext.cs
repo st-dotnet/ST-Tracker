@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Dapper;
 using DBModels.Model;
 using TimeTracker.DapperUtility;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace TimeTracker.Utilities
 {
@@ -19,7 +18,7 @@ namespace TimeTracker.Utilities
             userManager = new UserInformationManager("user_info.xml");
             offlineTrackerDataManager = new UserInformationManager("tracker_info.xml");
         }
-
+        #region Save Tracker Data to Database
         public async Task AddUpdateTrackerInfo(TimeSpan statTotal)
         {
             try
@@ -37,48 +36,6 @@ namespace TimeTracker.Utilities
                 Console.WriteLine("Error: " + ex.Message);
             }
         }
-
-        private async Task<TrackerData> CheckTrackingExists(DateTime date, Guid? empId)
-        {
-            using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
-            {
-                return await db.QuerySingleOrDefaultAsync<TrackerData>("SELECT * FROM [dbo].[Tracker] WHERE [Date] = @date AND EmployeeId = @empId", new { date = date, empId = empId });
-            }
-        }
-
-        public async Task<Guid?> GetEmployeeId(string username)
-        {
-            if (string.IsNullOrEmpty(username))
-            {
-                username = userManager.RetrieveUserInformation().Username;
-            }
-            using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
-            {
-                return await db.QuerySingleOrDefaultAsync<Guid?>("SELECT EmployeeId FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
-            }
-        }
-
-        public async Task SaveScreenshot(byte[] screenshotBytes, int? keyStrokes, bool isCameraCapture)
-        {
-            var dateTime = GetPreviousDate();
-            var empId = userManager.RetrieveUserInformation().EmployeeId;
-            var trackerData = await CheckTrackingExists(dateTime.Date, empId);
-            TrackerScreenshotData newData = new TrackerScreenshotData
-            {
-                TrackerId = trackerData.TrackerId,
-                Screenshots = screenshotBytes,
-                Keystrokes = keyStrokes,
-                CreatedDateTime = DateTime.Now,
-                IsCameraCapture = isCameraCapture,
-            };
-            using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
-            {
-                string query = @"INSERT INTO TrackerScreenshots (TrackerId, Screenshots, Keystrokes, createdDateTime, IsCameraCapture)
-                                    VALUES (@TrackerId, @Screenshots, @Keystrokes, @CreatedDateTime, @IsCameraCapture)";
-                db.Execute(query, newData);
-            }
-        }
-
         public async Task TryStoreOfflineDataToDb(TrackerDataOffline offlineTrackerData)
         {
             var offlineEmpId = userManager.RetrieveUserInformation().EmployeeId;
@@ -109,13 +66,12 @@ namespace TimeTracker.Utilities
             }
 
         }
-
         private async Task StoreTrackerDataToDB(TimeSpan statTotal)
         {
-            UserInformation userInfo = userManager.RetrieveUserInformation();
-            var dateTime = GetPreviousDate();
             try
             {
+                UserInformation userInfo = userManager.RetrieveUserInformation();
+                var dateTime = GetPreviousDate();
                 var empId = userManager.RetrieveUserInformation().EmployeeId;
                 TrackerData newData = new TrackerData
                 {
@@ -146,9 +102,42 @@ namespace TimeTracker.Utilities
             }
             catch (SqlException ex)
             {
-                
+                return;
             }
         }
+        #endregion
+
+        #region Save ScreenShots
+        public async Task SaveScreenshot(byte[] screenshotBytes, int? keyStrokes, bool isCameraCapture)
+        {
+            try
+            {
+                var dateTime = GetPreviousDate();
+                var empId = userManager.RetrieveUserInformation().EmployeeId;
+                var trackerData = await CheckTrackingExists(dateTime.Date, empId);
+                TrackerScreenshotData newData = new TrackerScreenshotData
+                {
+                    TrackerId = trackerData.TrackerId,
+                    Screenshots = screenshotBytes,
+                    Keystrokes = keyStrokes,
+                    CreatedDateTime = DateTime.Now,
+                    IsCameraCapture = isCameraCapture,
+                };
+                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
+                {
+                    string query = @"INSERT INTO TrackerScreenshots (TrackerId, Screenshots, Keystrokes, createdDateTime, IsCameraCapture)
+                                    VALUES (@TrackerId, @Screenshots, @Keystrokes, @CreatedDateTime, @IsCameraCapture)";
+                    db.Execute(query, newData);
+                }
+            }
+            catch (SqlException ex)
+            {
+                return;
+            }
+        }
+        #endregion
+
+        #region Store Tracker Data Locally
         public async Task StoreTrackerDataToLocal(TimeSpan statTotal)
         {
             UserInformation userInfo = userManager.RetrieveUserInformation();
@@ -161,6 +150,41 @@ namespace TimeTracker.Utilities
                 EmployeeUsername = userInfo.Username,
             };
             offlineTrackerDataManager.SaveTrackerDataOffline(newDataOffline);
+        }
+        #endregion
+
+        private async Task<TrackerData> CheckTrackingExists(DateTime date, Guid? empId)
+        {
+            try
+            {
+                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
+                {
+                    return await db.QuerySingleOrDefaultAsync<TrackerData>("SELECT * FROM [dbo].[Tracker] WHERE [Date] = @date AND EmployeeId = @empId", new { date = date, empId = empId });
+                }
+            }
+            catch (SqlException ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<Guid?> GetEmployeeId(string username)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(username))
+                {
+                    username = userManager.RetrieveUserInformation().Username;
+                }
+                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
+                {
+                    return await db.QuerySingleOrDefaultAsync<Guid?>("SELECT EmployeeId FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
+                }
+            }
+            catch (SqlException ex)
+            {
+                return null;
+            }
         }
         private DateTime GetPreviousDate()
         {
@@ -184,7 +208,7 @@ namespace TimeTracker.Utilities
         {
             var dateTime = GetPreviousDate();
             var empId = userManager.RetrieveUserInformation().EmployeeId;
-            if(isInternet)
+            if (isInternet)
             {
                 var trackerData = await CheckTrackingExists(dateTime.Date, empId);
                 if (trackerData != null)
@@ -204,7 +228,7 @@ namespace TimeTracker.Utilities
                     return oldtotalTimeOnline;
                 }
             }
-           
+
             return TimeSpan.Zero;
         }
     }

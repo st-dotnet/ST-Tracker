@@ -1,25 +1,12 @@
-﻿using DBModels.Model;
-using Microsoft.Identity.Client;
+﻿using Microsoft.Identity.Client;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TimeTracker.Utilities;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace TimeTracker.Form
 {
     public partial class Login : System.Windows.Forms.Form
     {
-        private const string stDomain = "@supremetechnologiesindia.com";
         private static IPublicClientApplication publicClientApp;
         private readonly UserInformationManager userManager;
         public Login()
