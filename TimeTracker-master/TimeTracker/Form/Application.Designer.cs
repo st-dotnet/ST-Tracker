@@ -52,6 +52,7 @@ namespace TimeTracker.Form
             this.statsTotalText = new System.Windows.Forms.ToolStripStatusLabel();
             this.statsSelectedText = new System.Windows.Forms.ToolStripStatusLabel();
             this.statsCategoryText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.internetStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.startTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.stopTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -65,7 +66,6 @@ namespace TimeTracker.Form
             this.profilePictureBox = new System.Windows.Forms.PictureBox();
             this.EmployeeName = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.internetStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -254,6 +254,13 @@ namespace TimeTracker.Form
             this.statsCategoryText.Name = "statsCategoryText";
             resources.ApplyResources(this.statsCategoryText, "statsCategoryText");
             // 
+            // internetStatus
+            // 
+            this.internetStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(31)))), ((int)(((byte)(75)))));
+            this.internetStatus.ForeColor = System.Drawing.Color.White;
+            this.internetStatus.Name = "internetStatus";
+            resources.ApplyResources(this.internetStatus, "internetStatus");
+            // 
             // toolStripMain
             // 
             this.toolStripMain.AllowItemReorder = true;
@@ -364,13 +371,6 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.pictureBox2, "pictureBox2");
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.TabStop = false;
-            // 
-            // internetStatus
-            // 
-            this.internetStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(31)))), ((int)(((byte)(75)))));
-            this.internetStatus.ForeColor = System.Drawing.Color.White;
-            this.internetStatus.Name = "internetStatus";
-            resources.ApplyResources(this.internetStatus, "internetStatus");
             // 
             // Application
             // 

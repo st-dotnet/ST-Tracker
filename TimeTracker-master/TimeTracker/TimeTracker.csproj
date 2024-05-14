@@ -156,6 +156,7 @@
     <Compile Include="Model\TimeTrackerData.cs" />
     <Compile Include="Model\TrackedDataCategory.cs" />
     <Compile Include="Utilities\DBAccessContext.cs" />
+    <Compile Include="Utilities\InternetManager.cs" />
     <Compile Include="Utilities\UserInformationManager.cs" />
     <EmbeddedResource Include="Form\AboutBox.cs.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>

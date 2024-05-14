@@ -78,7 +78,6 @@ namespace TimeTracker
         /// <returns></returns>
         public DateTimeOffset Start()
         {
-            CheckInternetConnected();
             if (Tracking)
             {
                 throw new TrackingServiceException("Tracking has already started.");
@@ -147,42 +146,26 @@ namespace TimeTracker
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            await SaveTimerDataAtEveryInterval();
+            InternetManager ineterntM = new InternetManager(_application);
+            var internetAvailavble = await ineterntM.CheckInternetConnected();
             int keyStrokes = CheckActivity();//Get KeyStrokes
-            await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
             idleCheckAfter1Min(keyStrokes);
-        }
-        public async Task<bool> CheckInternetConnected()
-        {
-            var internetAvailable = false;
-            if (IsInternetAvailable())
+            if (internetAvailavble)
             {
-                internetAvailable = true;
+                await SaveTimerDataAtEveryInterval(true);
+                await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
             }
-            _application.InternetStatus(internetAvailable);
-            return internetAvailable;
-        }
-        private static bool IsInternetAvailable()
-        {
-            try
+            else
             {
-                using (var ping = new Ping())
-                {
-                    var result = ping.Send("8.8.8.8", 2000);
-                    return (result.Status == IPStatus.Success);
-                }
-            }
-            catch (Exception)
-            {
-                return false;
+                await SaveTimerDataAtEveryInterval(false);
             }
         }
-        private async Task SaveTimerDataAtEveryInterval()
+       
+        private async Task SaveTimerDataAtEveryInterval(bool isStoreToDB)
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             TimeSpan elapsedTime = GetIntervalTimeElasped();
-            var internetAvailavble = await CheckInternetConnected();
-            if(internetAvailavble)
+            if(isStoreToDB)
             {
                 await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
             }

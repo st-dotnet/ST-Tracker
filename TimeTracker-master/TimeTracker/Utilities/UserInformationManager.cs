@@ -16,7 +16,7 @@ namespace TimeTracker.Utilities
         {
             _filePath = filePath;
         }
-        public void SaveUserInformation(AuthenticationResult result)
+        public void SaveUserInformation(AuthenticationResult result, Guid? empId)
         {
             if (File.Exists(_filePath))
             {
@@ -32,6 +32,7 @@ namespace TimeTracker.Utilities
                     XDocument xmlDocument = new XDocument(
                     new XElement("User",
                     new XElement("Username", result.Account.Username),
+                    new XElement("EmployeeId", empId),
                     new XElement("IdToken", result.IdToken),
                     new XElement("AccessToken", result.AccessToken),
                     new XElement("ExpiresOn", result.ExpiresOn)
@@ -65,6 +66,7 @@ namespace TimeTracker.Utilities
                     return new UserInformation
                     {
                         Username = userElement.Element("Username")?.Value,
+                        EmployeeId = Guid.Parse(userElement.Element("EmployeeId")?.Value),
                         IdToken = userElement.Element("IdToken")?.Value,
                         AccessToken = userElement.Element("AccessToken")?.Value,
                         ExpiresOn = DateTimeOffset.Parse(userElement.Element("ExpiresOn")?.Value)

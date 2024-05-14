@@ -47,7 +47,9 @@ namespace TimeTracker.Form
                    .ExecuteAsync();
             if (result != null)
             {
-                userManager.SaveUserInformation(result);
+                DBAccessContext dBAccessContext = new DBAccessContext();
+                var empId = await dBAccessContext.GetEmployeeId(result.Account.Username);
+                userManager.SaveUserInformation(result, empId);
                 this.Hide(); // Hide the login form
                 Application appForm = new Application();
                 appForm.ShowDialog(); // Show the main application form

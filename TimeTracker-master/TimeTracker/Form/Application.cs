@@ -24,11 +24,14 @@ namespace TimeTracker.Form
         const int CATEGORY_MAXLENGTH = 255;
         private BindingList<TimeTrackerData> Data;
         private TrackingService TrackingService;
+        private InternetManager InternetManager;
         private Timer RefreshTimer;
         private ToolTip toolTip = new ToolTip();
         private FileInfo file;
         private static readonly CultureInfo defaultCulture = CultureInfo.CurrentCulture;
         private bool isSaved = true;
+        private TimeSpan totalTimeToShow;
+   
         public Application()
         {
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -56,7 +59,8 @@ namespace TimeTracker.Form
 
             InitializeComponent();
             TrackingService.InitializeHooks();
-
+            InternetManager = new InternetManager(this);
+            InternetManager.InternetCheckInitialize();
             // TODO: Finish add and copy buttons
             // Remove not implemented buttons
             this.toolStripMain.Items.RemoveByKey("addToolStripButton");
@@ -67,7 +71,6 @@ namespace TimeTracker.Form
 
             this.Refresh();
             Data.ListChanged += new ListChangedEventHandler(DataListChanged);
-            TrackingService.CheckInternetConnected();
             RefreshTitle();
             RefreshTrackingButtons();
             RefreshEditButtons();
@@ -76,7 +79,7 @@ namespace TimeTracker.Form
             AssignEmployeeValues();
             this.TopMost = true;
         }
-
+     
         private void SaveSettings()
         {
             // Settings.Default.alwaysOnTop = this.alwaysOnTopToolStripMenuItem.Checked;
@@ -104,25 +107,32 @@ namespace TimeTracker.Form
         }
         private async void AssignEmployeeValues()
         {
-            DBAccessContext dBAccessContext = new DBAccessContext();
-            var employeeData = await dBAccessContext.GetEmployeeDetail();
-            if (employeeData.ProfilePicture != null && employeeData.ProfilePicture.Length > 0)
+            bool isInternet = await InternetManager.CheckInternetConnected();
+            if (isInternet)
             {
-                Image profileImage;
-                using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
+                DBAccessContext dBAccessContext = new DBAccessContext();
+                var employeeData = await dBAccessContext.GetEmployeeDetail();
+                if (employeeData.ProfilePicture != null && employeeData.ProfilePicture.Length > 0)
                 {
-                    profileImage = Image.FromStream(ms);
+                    Image profileImage;
+                    using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
+                    {
+                        profileImage = Image.FromStream(ms);
+                    }
+                    profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                    profilePictureBox.Image = profileImage;
                 }
-                profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                profilePictureBox.Image = profileImage;
+                this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
             }
-            this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
         }
 
         private async void SetTotalTime()
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
-            var totalTime = await dBAccessContext.GetTotalTime();
+            var isInternet = await InternetManager.CheckInternetConnected();
+            var totalTime = await dBAccessContext.GetTotalTime(isInternet, totalTimeToShow);
+            if (isInternet)
+                totalTimeToShow = totalTime;
             this.statsTotalText.Text = String.Format(Properties.Resources.Application_statsTotal_Text, totalTime.Format());
         }
         private void RefreshStatistics()
@@ -268,7 +278,7 @@ namespace TimeTracker.Form
         }
         public async Task Pause_Tracking()
         {
-            TrackingService.CheckInternetConnected();
+            var internetAvailable = await InternetManager.CheckInternetConnected();
             DBAccessContext dBAccessContext = new DBAccessContext();
             RefreshTimer.Stop();
 
@@ -283,7 +293,14 @@ namespace TimeTracker.Form
             RefreshTrackingButtons();
             RefreshCategoryPicker();
             TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
-            await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+            if (internetAvailable)
+            {
+                await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+            }
+            else
+            {
+                await dBAccessContext.StoreTrackerDataToLocal(statTotal);
+            }
             SetTotalTime();
         }
 
@@ -644,25 +661,31 @@ namespace TimeTracker.Form
             this.categoryToolStripComboBox.Text = "";
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
             Data.Clear();
+            var internetAvailable = await InternetManager.CheckInternetConnected();
             if (item != null)
             {
                 TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
-                await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+                if (internetAvailable)
+                {
+                    await dBAccessContext.AddUpdateTrackerInfo(statTotal);
+                }
+                else
+                {
+                    await dBAccessContext.StoreTrackerDataToLocal(statTotal);
+                }
             }
             SetTotalTime();
-            TrackingService.CheckInternetConnected();
             // No need to close handles here, FileInfo doesn't use them
             file = null;
             isSaved = true;
             RefreshEditButtons();
             RefreshTitle();
         }
-       
+
         private const int SW_RESTORE = 9;
         public void ShowIdleAlert()
         {
             SetTotalTime();
-            TrackingService.CheckInternetConnected();
             this.panel1.Visible = true;
             this.panel2.Visible = false;
             SetApplicationToFront();

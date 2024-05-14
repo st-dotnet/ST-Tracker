@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using DBModels.Model;
 using TimeTracker.DapperUtility;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace TimeTracker.Utilities
 {
@@ -45,7 +46,7 @@ namespace TimeTracker.Utilities
             }
         }
 
-        private async Task<Guid?> GetEmployeeId(string username)
+        public async Task<Guid?> GetEmployeeId(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -60,7 +61,7 @@ namespace TimeTracker.Utilities
         public async Task SaveScreenshot(byte[] screenshotBytes, int? keyStrokes, bool isCameraCapture)
         {
             var dateTime = GetPreviousDate();
-            var empId = await GetEmployeeId("");
+            var empId = userManager.RetrieveUserInformation().EmployeeId;
             var trackerData = await CheckTrackingExists(dateTime.Date, empId);
             TrackerScreenshotData newData = new TrackerScreenshotData
             {
@@ -80,7 +81,7 @@ namespace TimeTracker.Utilities
 
         public async Task TryStoreOfflineDataToDb(TrackerDataOffline offlineTrackerData)
         {
-            var offlineEmpId = await GetEmployeeId(offlineTrackerData.EmployeeUsername);
+            var offlineEmpId = userManager.RetrieveUserInformation().EmployeeId;
             TrackerData offlineDataToStore = new TrackerData
             {
                 TrackerId = offlineTrackerData.TrackerId,
@@ -115,7 +116,7 @@ namespace TimeTracker.Utilities
             var dateTime = GetPreviousDate();
             try
             {
-                var empId = await GetEmployeeId(userInfo.Username);
+                var empId = userManager.RetrieveUserInformation().EmployeeId;
                 TrackerData newData = new TrackerData
                 {
                     TrackerId = Guid.NewGuid(),
@@ -179,15 +180,31 @@ namespace TimeTracker.Utilities
                 return await db.QuerySingleOrDefaultAsync<EmployeeData>("SELECT EmployeeId, FirstName, LastName, ProfilePicture FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
             }
         }
-        public async Task<TimeSpan> GetTotalTime()
+        public async Task<TimeSpan> GetTotalTime(bool isInternet, TimeSpan oldtotalTimeOnline)
         {
             var dateTime = GetPreviousDate();
-            var empId = await GetEmployeeId("");
-            var trackerData = await CheckTrackingExists(dateTime.Date, empId);
-            if(trackerData != null)
+            var empId = userManager.RetrieveUserInformation().EmployeeId;
+            if(isInternet)
             {
-                return trackerData.TotalTime;
+                var trackerData = await CheckTrackingExists(dateTime.Date, empId);
+                if (trackerData != null)
+                {
+                    return trackerData.TotalTime;
+                }
             }
+            else
+            {
+                var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
+                if (offlineDataToStore != null)
+                {
+                    return oldtotalTimeOnline + offlineDataToStore.TotalTime;
+                }
+                else
+                {
+                    return oldtotalTimeOnline;
+                }
+            }
+           
             return TimeSpan.Zero;
         }
     }

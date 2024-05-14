@@ -30,6 +30,7 @@ namespace DBModels.Model
     public class UserInformation
     {
         public string Username { get; set; }
+        public Guid? EmployeeId { get; set; }
         public string IdToken { get; set; }
         public string AccessToken { get; set; }
         public DateTimeOffset ExpiresOn { get; set; }

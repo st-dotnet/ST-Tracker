@@ -1380,6 +1380,12 @@
   <data name="&gt;&gt;statsCategoryText.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;internetStatus.Name" xml:space="preserve">
+    <value>internetStatus</value>
+  </data>
+  <data name="&gt;&gt;internetStatus.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;startTrackingToolStripButton.Name" xml:space="preserve">
     <value>startTrackingToolStripButton</value>
   </data>
@@ -1427,12 +1433,6 @@
   </data>
   <data name="&gt;&gt;notifyIcon.Type" xml:space="preserve">
     <value>System.Windows.Forms.NotifyIcon, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;internetStatus.Name" xml:space="preserve">
-    <value>internetStatus</value>
-  </data>
-  <data name="&gt;&gt;internetStatus.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>Application</value>
