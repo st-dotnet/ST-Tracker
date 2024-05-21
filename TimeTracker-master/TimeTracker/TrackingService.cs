@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using TimeTracker.Model;
 using TimeTracker.Utilities;
 using AForge.Video.DirectShow;
+using TimeTracker.Form;
 
 namespace TimeTracker
 {
@@ -77,7 +78,7 @@ namespace TimeTracker
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = timeIntervalMinutes * 30 * 1000;
+            timer.Interval = 10 * 1000;
             timer.Tick += Timer_Tick;
             return this.StartTime;
         }
@@ -124,7 +125,7 @@ namespace TimeTracker
             InternetManager ineterntM = new InternetManager(_application);
             var internetAvailavble = await ineterntM.CheckInternetConnected();
             int keyStrokes = CheckActivity();//Get KeyStrokes
-            idleCheckAfter1Min(keyStrokes);
+            await idleCheckAfter1Min(keyStrokes);
             if (internetAvailavble)
             {
                 await SaveTimerDataAtEveryInterval(true);
@@ -296,9 +297,9 @@ namespace TimeTracker
         #endregion
 
         #region Idle Time Detection Code
-        private async void idleCheckAfter1Min(int oldKeyStrokes)
+        private async Task idleCheckAfter1Min(int oldKeyStrokes)
         {
-            await Task.Delay(TimeSpan.FromMinutes(1));
+            //await Task.Delay(TimeSpan.FromMinutes(1));
             int keysThresholdToStopTracking;
             if (!int.TryParse(ConfigurationManager.AppSettings["KeysThresholdToStopTracking"], out keysThresholdToStopTracking))
             {

@@ -19,16 +19,21 @@ namespace TimeTracker.Utilities
             offlineTrackerDataManager = new UserInformationManager("tracker_info.xml");
         }
         #region Save Tracker Data to Database
-        public async Task AddUpdateTrackerInfo(TimeSpan statTotal)
+        public async Task AddUpdateTrackerInfo(TimeSpan statTotal = default, TimeSpan idleTime = default)
         {
             try
             {
+                if (statTotal == default)
+                    statTotal = TimeSpan.Zero;
+                if (idleTime == default)
+                    idleTime = TimeSpan.Zero;
+
                 var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
                 if (offlineDataToStore != null)
                 {
                     await TryStoreOfflineDataToDb(offlineDataToStore);
                 }
-                await StoreTrackerDataToDB(statTotal);
+                await StoreTrackerDataToDB(statTotal, idleTime);
 
             }
             catch (Exception ex)
@@ -44,6 +49,7 @@ namespace TimeTracker.Utilities
                 TrackerId = offlineTrackerData.TrackerId,
                 Date = offlineTrackerData.Date,
                 TotalTime = offlineTrackerData.TotalTime,
+                IdleTime = offlineTrackerData.IdleTime,
                 EmployeeId = offlineEmpId,
             };
             using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
@@ -54,19 +60,20 @@ namespace TimeTracker.Utilities
                 {
                     offlineDataToStore.TrackerId = trackerData.TrackerId;
                     offlineDataToStore.TotalTime = trackerData.TotalTime + offlineDataToStore.TotalTime;
-                    addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime WHERE TrackerId = @TrackerId";
+                    offlineDataToStore.IdleTime = trackerData.IdleTime + offlineDataToStore.IdleTime;
+                    addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime, IdleTime = @IdleTime  WHERE TrackerId = @TrackerId";
                 }
                 else
                 {
-                    addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId)
-                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId)";
+                    addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId, IdleTime)
+                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
                 }
                 db.Execute(addUpdateQuery, offlineDataToStore);
                 offlineTrackerDataManager.RemoveOfflineTrackerData();
             }
 
         }
-        private async Task StoreTrackerDataToDB(TimeSpan statTotal)
+        private async Task StoreTrackerDataToDB(TimeSpan statTotal, TimeSpan idleTime)
         {
             try
             {
@@ -78,6 +85,7 @@ namespace TimeTracker.Utilities
                     TrackerId = Guid.NewGuid(),
                     Date = dateTime.Date,
                     TotalTime = statTotal,
+                    IdleTime = idleTime,
                     EmployeeId = empId,
                 };
 
@@ -90,12 +98,13 @@ namespace TimeTracker.Utilities
                         newData.TrackerId = trackerData.TrackerId;
                         newData.EmployeeId = trackerData.EmployeeId;
                         newData.TotalTime = trackerData.TotalTime + statTotal;
-                        addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime WHERE TrackerId = @TrackerId";
+                        newData.IdleTime = trackerData.IdleTime + idleTime;
+                        addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime, IdleTime = @IdleTime  WHERE TrackerId = @TrackerId";
                     }
                     else
                     {
-                        addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId)
-                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId)";
+                        addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId , IdleTime)
+                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
                     }
                     db.Execute(addUpdateQuery, newData);
                 }
@@ -138,8 +147,12 @@ namespace TimeTracker.Utilities
         #endregion
 
         #region Store Tracker Data Locally
-        public async Task StoreTrackerDataToLocal(TimeSpan statTotal)
+        public async Task StoreTrackerDataToLocal(TimeSpan statTotal = default, TimeSpan idleTime = default)
         {
+            if (statTotal == default)
+                statTotal = TimeSpan.Zero;
+            if (idleTime == default)
+                idleTime = TimeSpan.Zero;
             UserInformation userInfo = userManager.RetrieveUserInformation();
             var dateTime = GetPreviousDate();
             TrackerDataOffline newDataOffline = new TrackerDataOffline
@@ -147,6 +160,7 @@ namespace TimeTracker.Utilities
                 TrackerId = Guid.NewGuid(),
                 Date = dateTime.Date,
                 TotalTime = statTotal,
+                IdleTime = idleTime,
                 EmployeeUsername = userInfo.Username,
             };
             offlineTrackerDataManager.SaveTrackerDataOffline(newDataOffline);
@@ -213,7 +227,7 @@ namespace TimeTracker.Utilities
                 var trackerData = await CheckTrackingExists(dateTime.Date, empId);
                 if (trackerData != null)
                 {
-                    return trackerData.TotalTime;
+                    return trackerData.TotalTime + trackerData.IdleTime;
                 }
             }
             else
@@ -221,7 +235,7 @@ namespace TimeTracker.Utilities
                 var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
                 if (offlineDataToStore != null)
                 {
-                    return oldtotalTimeOnline + offlineDataToStore.TotalTime;
+                    return oldtotalTimeOnline + offlineDataToStore.TotalTime + offlineDataToStore.IdleTime;
                 }
                 else
                 {

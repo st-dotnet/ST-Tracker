@@ -67,7 +67,7 @@ namespace TimeTracker.Form
             SetTotalTime();
             this.TopMost = true;
         }
-     
+
         private void RefreshTitle()
         {
             var text = ProductName;
@@ -176,6 +176,10 @@ namespace TimeTracker.Form
         #region Start / Pause / PunchOut
         private async void startTrackingToolStripButton_Click(object sender, EventArgs e)
         {
+            await Start_Tracking();
+        }
+        public async Task Start_Tracking()
+        {
             TrackingService.Start();
             RefreshTimer.Start();
             RefreshTrackingButtons();
@@ -192,11 +196,11 @@ namespace TimeTracker.Form
         }
         public async Task Pause_Tracking()
         {
+            TimeTrackerData item = TrackingService.Stop();
             var internetAvailable = await InternetManager.CheckInternetConnected();
             DBAccessContext dBAccessContext = new DBAccessContext();
             RefreshTimer.Stop();
 
-            TimeTrackerData item = TrackingService.Stop();
             // fill in category
             if (categoryToolStripComboBox.Text.Length > 0)
             {
@@ -372,6 +376,16 @@ namespace TimeTracker.Form
             this.panel1.Visible = true;
             this.panel2.Visible = false;
             SetApplicationToFront();
+            if (this.WindowState == FormWindowState.Minimized)
+                this.WindowState = FormWindowState.Normal;
+            Point form1Center = new Point(this.Left + this.Width / 2, this.Top + this.Height / 2);
+
+            IdleDialog idlePopup = new IdleDialog(this);
+            int form2X = form1Center.X - idlePopup.Width / 2;
+            int form2Y = form1Center.Y - idlePopup.Height / 2;
+            idlePopup.StartPosition = FormStartPosition.Manual;
+            idlePopup.Location = new Point(form2X, form2Y);
+            idlePopup.Show();
         }
         private void SetApplicationToFront()
         {

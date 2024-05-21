@@ -90,9 +90,13 @@ namespace TimeTracker.Utilities
                 {
                     var oldTotalTimeString = trackerDataElement.Element("TotalTime")?.Value;
                     TimeSpan.TryParse(oldTotalTimeString, out TimeSpan oldTotalTime);
+                    var oldIdleTimeString = trackerDataElement.Element("IdleTime")?.Value;
+                    TimeSpan.TryParse(oldIdleTimeString, out TimeSpan oldIdleTime);
                     File.Delete(_filePath);
                     TimeSpan newTotalTime = oldTotalTime + result.TotalTime;
                     result.TotalTime = newTotalTime;
+                    TimeSpan newIdleTime = oldIdleTime + result.IdleTime;
+                    result.IdleTime = newIdleTime;
                 }
             }
             XDocument xmlDocument1 = new XDocument(
@@ -100,6 +104,7 @@ namespace TimeTracker.Utilities
                     new XElement("TrackerId", result.TrackerId),
                     new XElement("Date", result.Date),
                     new XElement("TotalTime", string.Format("{0:hh\\:mm\\:ss\\.fffffff}", result.TotalTime)),
+                    new XElement("IdleTime", string.Format("{0:hh\\:mm\\:ss\\.fffffff}", result.IdleTime)),
                     new XElement("EmployeeUsername", result.EmployeeUsername)
                     )
                 );
@@ -123,6 +128,7 @@ namespace TimeTracker.Utilities
                         TrackerId = Guid.Parse(trackerDataElement.Element("TrackerId")?.Value),
                         Date = DateTime.Parse(trackerDataElement.Element("Date")?.Value),
                         TotalTime = TimeSpan.Parse(trackerDataElement.Element("TotalTime")?.Value),
+                        IdleTime = TimeSpan.Parse(trackerDataElement.Element("IdleTime")?.Value),
                         EmployeeUsername = trackerDataElement.Element("EmployeeUsername")?.Value
                     };
                 }

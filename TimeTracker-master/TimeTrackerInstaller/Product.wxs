@@ -91,6 +91,9 @@
 			<Component Id="AForge.Video.DirectShow.dll" Guid="805b2251-3c13-44a3-8c96-da1e29bdb646">
 			  <File Id="AForge.Video.DirectShow.dll" Name="AForge.Video.DirectShow.dll" Source="$(var.TimeTracker_TargetDir)AForge.Video.DirectShow.dll" />
 			</Component>
+			<Component Id="Icon.ico" Guid="69775755-94fa-4f17-a361-9330d148daf3">
+			  <File Id="Icon.ico" Name="Icon.ico" Source="$(var.TimeTracker_TargetDir)Icon.ico" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 	<Fragment>

@@ -7,6 +7,7 @@ namespace DBModels.Model
         public Guid TrackerId { get; set; }
         public DateTime Date { get; set; }
         public TimeSpan TotalTime { get; set; }
+        public TimeSpan IdleTime { get; set; }
         public Guid? EmployeeId { get; set; }
     }
 
@@ -25,6 +26,7 @@ namespace DBModels.Model
         public Guid TrackerId { get; set; }
         public DateTime Date { get; set; }
         public TimeSpan TotalTime { get; set; }
+        public TimeSpan IdleTime { get; set; }
         public string EmployeeUsername { get; set; }
     }
     public class UserInformation
