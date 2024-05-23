@@ -70,7 +70,6 @@ namespace TimeTracker
             this.Tracking = true;
             this.StartTime = DateTimeOffset.Now;
             this.StartTimeInterval = this.StartTime;
-            ResetKeyCount();
             int timeIntervalMinutes;
             if (!int.TryParse(ConfigurationManager.AppSettings["TimeIntervalInMinutes"], out timeIntervalMinutes))
             {
@@ -92,7 +91,6 @@ namespace TimeTracker
             }
             await SaveTimerData();
             this.Tracking = false;
-            ResetKeyCount();
             timer.Stop();
             return new TimeTrackerData(_startTime, DateTimeOffset.Now);
         }
@@ -123,12 +121,10 @@ namespace TimeTracker
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            await SaveTimerData();
-            int keyStrokes = CheckActivity();
-            idleCheckAfter1Min(keyStrokes);
+            await SaveTimerData(true);
         }
 
-        private async Task SaveTimerData()
+        private async Task SaveTimerData(bool isIdleCheck = false)
         {
             try
             {
@@ -143,6 +139,11 @@ namespace TimeTracker
                 else
                 {
                     await SaveTimerDataAtEveryInterval(false);
+                }
+                if (isIdleCheck)
+                {
+                    idleCheckAfter1Min(keyStrokes);
+
                 }
                 _application.SetTotalTime();
             }
