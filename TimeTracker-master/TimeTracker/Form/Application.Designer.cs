@@ -41,8 +41,6 @@ namespace TimeTracker.Form
             this.panel2 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.alert = new System.Windows.Forms.Label();
             this.dataGridViewMain = new System.Windows.Forms.DataGridView();
             this.DateStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -71,7 +69,6 @@ namespace TimeTracker.Form
             this.toolStripContainer1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.toolStripMain.SuspendLayout();
@@ -88,7 +85,6 @@ namespace TimeTracker.Form
             // 
             resources.ApplyResources(this.toolStripContainer1.ContentPanel, "toolStripContainer1.ContentPanel");
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panel2);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.dataGridViewMain);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip);
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
@@ -121,22 +117,6 @@ namespace TimeTracker.Form
             resources.ApplyResources(this.pictureBox1, "pictureBox1");
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.TabStop = false;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(31)))), ((int)(((byte)(75)))));
-            this.panel1.Controls.Add(this.alert);
-            resources.ApplyResources(this.panel1, "panel1");
-            this.panel1.Name = "panel1";
-            // 
-            // alert
-            // 
-            this.alert.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(31)))), ((int)(((byte)(75)))));
-            this.alert.Cursor = System.Windows.Forms.Cursors.Default;
-            resources.ApplyResources(this.alert, "alert");
-            this.alert.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.alert.Name = "alert";
-            this.alert.UseMnemonic = false;
             // 
             // dataGridViewMain
             // 
@@ -389,7 +369,6 @@ namespace TimeTracker.Form
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
@@ -419,8 +398,6 @@ namespace TimeTracker.Form
         private System.Windows.Forms.ToolStripStatusLabel statsSelectedText;
         private System.Windows.Forms.ToolStripStatusLabel statsCategoryText;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label alert;
         private DataGridViewTextBoxColumn DateStart;
         private DataGridViewTextBoxColumn EndDate;
         private DataGridViewTextBoxColumn TimeSpan;

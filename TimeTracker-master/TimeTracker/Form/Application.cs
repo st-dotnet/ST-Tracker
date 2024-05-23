@@ -186,8 +186,6 @@ namespace TimeTracker.Form
             SetTotalTime();
             this.trackingStartTimeToolStripTextBox.Text = TrackingService.StartTime.LocalDateTime.ToString("h\\:mm\\:ss");
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
-            this.panel1.Visible = false;
-            this.panel2.Visible = true;
         }
 
         private async void stopTrackingToolStripButton_Click(object sender, EventArgs e)
@@ -196,9 +194,7 @@ namespace TimeTracker.Form
         }
         public async Task Pause_Tracking()
         {
-            TimeTrackerData item = TrackingService.Stop();
-            var internetAvailable = await InternetManager.CheckInternetConnected();
-            DBAccessContext dBAccessContext = new DBAccessContext();
+            TimeTrackerData item = await TrackingService.Stop();
             RefreshTimer.Stop();
 
             // fill in category
@@ -210,15 +206,6 @@ namespace TimeTracker.Form
             Data.Add(item);
             RefreshTrackingButtons();
             RefreshCategoryPicker();
-            TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
-            if (internetAvailable)
-            {
-                await dBAccessContext.AddUpdateTrackerInfo(statTotal);
-            }
-            else
-            {
-                await dBAccessContext.StoreTrackerDataToLocal(statTotal);
-            }
             SetTotalTime();
         }
 
@@ -228,31 +215,15 @@ namespace TimeTracker.Form
         }
         private async Task stopTracking()
         {
-            DBAccessContext dBAccessContext = new DBAccessContext();
-            TimeTrackerData item = TrackingService.Stop();
+            await TrackingService.Stop();
             RefreshTimer.Stop();
             RefreshTrackingButtons();
             RefreshCategoryPicker();
-            this.panel1.Visible = false;
-            this.panel2.Visible = true;
             this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
             this.categoryToolStripComboBox.Items.Clear();
             this.categoryToolStripComboBox.Text = "";
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
             Data.Clear();
-            var internetAvailable = await InternetManager.CheckInternetConnected();
-            if (item != null)
-            {
-                TimeSpan statTotal = TrackingService.GetIntervalTimeElasped();
-                if (internetAvailable)
-                {
-                    await dBAccessContext.AddUpdateTrackerInfo(statTotal);
-                }
-                else
-                {
-                    await dBAccessContext.StoreTrackerDataToLocal(statTotal);
-                }
-            }
             SetTotalTime();
             // No need to close handles here, FileInfo doesn't use them
             file = null;
@@ -373,8 +344,6 @@ namespace TimeTracker.Form
         public void ShowIdleAlert()
         {
             SetTotalTime();
-            this.panel1.Visible = true;
-            this.panel2.Visible = false;
             SetApplicationToFront();
             if (this.WindowState == FormWindowState.Minimized)
                 this.WindowState = FormWindowState.Normal;

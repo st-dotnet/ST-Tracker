@@ -48,6 +48,7 @@ namespace TimeTracker.Form
                 await dBAccessContext.StoreTrackerDataToLocal(default, elapsedTime);
             }
             await _application.Start_Tracking();
+            this.Close();
         }
     }
 }

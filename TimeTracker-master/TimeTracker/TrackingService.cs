@@ -60,7 +60,7 @@ namespace TimeTracker
             private set { _startTime = value; }
         }
 
-        public DateTimeOffset Start()
+        public async Task<DateTimeOffset> Start()
         {
             if (Tracking)
             {
@@ -78,18 +78,19 @@ namespace TimeTracker
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = 10 * 1000;
+            timer.Interval = timeIntervalMinutes * 60 * 1000;
             timer.Tick += Timer_Tick;
+            await SaveTimerData();
             return this.StartTime;
         }
 
-        public TimeTrackerData Stop()
+        public async Task<TimeTrackerData> Stop()
         {
             if (!Tracking)
             {
                 return null;
             }
-
+            await SaveTimerData();
             this.Tracking = false;
             ResetKeyCount();
             timer.Stop();
@@ -122,19 +123,29 @@ namespace TimeTracker
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            InternetManager ineterntM = new InternetManager(_application);
-            var internetAvailavble = await ineterntM.CheckInternetConnected();
-            int keyStrokes = CheckActivity();//Get KeyStrokes
-            await idleCheckAfter1Min(keyStrokes);
-            if (internetAvailavble)
+            await SaveTimerData();
+            int keyStrokes = CheckActivity();
+            idleCheckAfter1Min(keyStrokes);
+        }
+
+        private async Task SaveTimerData()
+        {
+            try
             {
-                await SaveTimerDataAtEveryInterval(true);
-                await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
+                InternetManager ineterntM = new InternetManager(_application);
+                var internetAvailavble = await ineterntM.CheckInternetConnected();
+                int keyStrokes = CheckActivity();//Get KeyStrokes
+                if (internetAvailavble)
+                {
+                    await SaveTimerDataAtEveryInterval(true);
+                    await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
+                }
+                else
+                {
+                    await SaveTimerDataAtEveryInterval(false);
+                }
             }
-            else
-            {
-                await SaveTimerDataAtEveryInterval(false);
-            }
+            catch { }
         }
 
         private async Task SaveTimerDataAtEveryInterval(bool isStoreToDB)
@@ -299,7 +310,7 @@ namespace TimeTracker
         #region Idle Time Detection Code
         private async Task idleCheckAfter1Min(int oldKeyStrokes)
         {
-            //await Task.Delay(TimeSpan.FromMinutes(1));
+            await Task.Delay(TimeSpan.FromMinutes(1));
             int keysThresholdToStopTracking;
             if (!int.TryParse(ConfigurationManager.AppSettings["KeysThresholdToStopTracking"], out keysThresholdToStopTracking))
             {

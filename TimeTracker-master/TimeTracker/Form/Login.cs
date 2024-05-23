@@ -27,25 +27,25 @@ namespace TimeTracker.Form
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
-            AuthenticationResult result = await publicClientApp.AcquireTokenInteractive(scopes)
-                   .WithParentActivityOrWindow(this)
-                   .WithUseEmbeddedWebView(false)
-                   .ExecuteAsync();
-            if (result != null)
-            {
-                DBAccessContext dBAccessContext = new DBAccessContext();
-                var empId = await dBAccessContext.GetEmployeeId(result.Account.Username);
-                userManager.SaveUserInformation(result, empId);
+            //string[] scopes = new string[] { "https://graph.microsoft.com/.default" };
+            //AuthenticationResult result = await publicClientApp.AcquireTokenInteractive(scopes)
+            //       .WithParentActivityOrWindow(this)
+            //       .WithUseEmbeddedWebView(false)
+            //       .ExecuteAsync();
+            //if (result != null)
+            //{
+            //    DBAccessContext dBAccessContext = new DBAccessContext();
+            //    var empId = await dBAccessContext.GetEmployeeId(result.Account.Username);
+            //    userManager.SaveUserInformation(result, empId);
                 this.Hide(); // Hide the login form
                 Application appForm = new Application();
                 appForm.ShowDialog(); // Show the main application form
                 this.Close(); // Close the login form
-            }
-            else
-            {
-                MessageBox.Show("Authentication failed. Please try again.");
-            }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Authentication failed. Please try again.");
+            //}
         }
     }
 }
