@@ -82,7 +82,7 @@
             this.Controls.Add(this.workingBtn);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "IdleDialog";
-            this.Text = "Idle Time";
+            this.Text = "IdleTime";
             this.ResumeLayout(false);
 
         }
