@@ -98,7 +98,7 @@ namespace TimeTracker.Form
         }
         #endregion
 
-        private async void SetTotalTime()
+        public async void SetTotalTime()
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             var isInternet = await InternetManager.CheckInternetConnected();
@@ -183,7 +183,6 @@ namespace TimeTracker.Form
             TrackingService.Start();
             RefreshTimer.Start();
             RefreshTrackingButtons();
-            SetTotalTime();
             this.trackingStartTimeToolStripTextBox.Text = TrackingService.StartTime.LocalDateTime.ToString("h\\:mm\\:ss");
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
         }
@@ -206,7 +205,6 @@ namespace TimeTracker.Form
             Data.Add(item);
             RefreshTrackingButtons();
             RefreshCategoryPicker();
-            SetTotalTime();
         }
 
         private async void toolStripButton1_Click(object sender, EventArgs e)
@@ -224,7 +222,6 @@ namespace TimeTracker.Form
             this.categoryToolStripComboBox.Text = "";
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
             Data.Clear();
-            SetTotalTime();
             // No need to close handles here, FileInfo doesn't use them
             file = null;
         }

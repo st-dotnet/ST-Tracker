@@ -144,6 +144,7 @@ namespace TimeTracker
                 {
                     await SaveTimerDataAtEveryInterval(false);
                 }
+                _application.SetTotalTime();
             }
             catch { }
         }
