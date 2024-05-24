@@ -44,6 +44,7 @@ namespace TimeTracker
         private DateTimeOffset _startTime;
         private DateTimeOffset StartTimeInterval;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Timer timerForIdle;
 
         public DateTimeOffset StartTime
         {
@@ -77,8 +78,14 @@ namespace TimeTracker
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = timeIntervalMinutes * 60 * 1000;
+            timer.Interval = 30 * 1000;
             timer.Tick += Timer_Tick;
+            //Timer For Idle 
+            timerForIdle = new System.Windows.Forms.Timer();
+            timerForIdle.Start();
+            timerForIdle.Interval = timeIntervalMinutes * 60 * 1000;
+            timerForIdle.Tick += Timer_Tick_ForIldeCheck;
+
             await SaveTimerData();
             return this.StartTime;
         }
@@ -92,6 +99,7 @@ namespace TimeTracker
             var endTimeSaved = await SaveTimerData();
             this.Tracking = false;
             timer.Stop();
+            timerForIdle.Stop();
             return new TimeTrackerData(_startTime, endTimeSaved);
         }
 
@@ -121,10 +129,15 @@ namespace TimeTracker
 
         private async void Timer_Tick(object sender, EventArgs e)
         {
-            await SaveTimerData(true);
+            await SaveTimerData();
+        }  
+        private async void Timer_Tick_ForIldeCheck(object sender, EventArgs e)
+        {
+            int keyStrokes = CheckActivity();
+            idleCheckAfter1Min(keyStrokes);
         }
 
-        private async Task<DateTimeOffset> SaveTimerData(bool isIdleCheck = false)
+        private async Task<DateTimeOffset> SaveTimerData()
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             InternetManager ineterntM = new InternetManager(_application);
@@ -140,12 +153,6 @@ namespace TimeTracker
             else
             {
                 await dBAccessContext.StoreTrackerDataToLocal(elapsedTime);
-            }
-            
-            if (isIdleCheck)
-            {
-                idleCheckAfter1Min(keyStrokes);
-
             }
             _application.SetTotalTime();
             return StartTimeInterval;
