@@ -78,7 +78,7 @@ namespace TimeTracker
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = 30 * 1000;
+            timer.Interval = 3 * 60 * 1000;
             timer.Tick += Timer_Tick;
             //Timer For Idle 
             timerForIdle = new System.Windows.Forms.Timer();
