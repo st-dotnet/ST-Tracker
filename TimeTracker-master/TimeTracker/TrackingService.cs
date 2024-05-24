@@ -89,10 +89,10 @@ namespace TimeTracker
             {
                 return null;
             }
-            await SaveTimerData();
+            var endTimeSaved = await SaveTimerData();
             this.Tracking = false;
             timer.Stop();
-            return new TimeTrackerData(_startTime, DateTimeOffset.Now);
+            return new TimeTrackerData(_startTime, endTimeSaved);
         }
 
         public String Elapsed
@@ -124,45 +124,31 @@ namespace TimeTracker
             await SaveTimerData(true);
         }
 
-        private async Task SaveTimerData(bool isIdleCheck = false)
-        {
-            try
-            {
-                InternetManager ineterntM = new InternetManager(_application);
-                var internetAvailavble = await ineterntM.CheckInternetConnected();
-                int keyStrokes = CheckActivity();//Get KeyStrokes
-                if (internetAvailavble)
-                {
-                    await SaveTimerDataAtEveryInterval(true);
-                    await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
-                }
-                else
-                {
-                    await SaveTimerDataAtEveryInterval(false);
-                }
-                if (isIdleCheck)
-                {
-                    idleCheckAfter1Min(keyStrokes);
-
-                }
-                _application.SetTotalTime();
-            }
-            catch { }
-        }
-
-        private async Task SaveTimerDataAtEveryInterval(bool isStoreToDB)
+        private async Task<DateTimeOffset> SaveTimerData(bool isIdleCheck = false)
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
+            InternetManager ineterntM = new InternetManager(_application);
+            var internetAvailavble = await ineterntM.CheckInternetConnected();
+            int keyStrokes = CheckActivity();//Get KeyStrokes
             TimeSpan elapsedTime = GetIntervalTimeElasped();
-            if (isStoreToDB)
+            this.StartTimeInterval = DateTimeOffset.Now;
+            if (internetAvailavble)
             {
                 await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
+                await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
             }
             else
             {
                 await dBAccessContext.StoreTrackerDataToLocal(elapsedTime);
             }
-            this.StartTimeInterval = DateTimeOffset.Now;
+            
+            if (isIdleCheck)
+            {
+                idleCheckAfter1Min(keyStrokes);
+
+            }
+            _application.SetTotalTime();
+            return StartTimeInterval;
         }
 
         private async Task Captures(int keyStrokes)
