@@ -206,7 +206,7 @@ namespace TimeTracker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total: {0}.
+        ///   Looks up a localized string similar to Total Time Logged: {0}.
         /// </summary>
         internal static string Application_statsTotal_Text {
             get {

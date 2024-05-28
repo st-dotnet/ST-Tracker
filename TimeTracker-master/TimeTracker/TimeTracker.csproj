@@ -124,12 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySourceLinkAttribute.cs" />
-    <Compile Include="Form\IdleDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form\IdleDialog.Designer.cs">
-      <DependentUpon>IdleDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Model\DBModels.cs" />
     <Compile Include="Utilities\Authentication.cs" />
     <Compile Include="Utilities\ConnectionClass.cs" />
@@ -183,9 +177,6 @@
     <EmbeddedResource Include="Form\Application.resx">
       <DependentUpon>Application.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form\IdleDialog.resx">
-      <DependentUpon>IdleDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>

@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using TimeTracker.Model;
 using TimeTracker.Utilities;
 using AForge.Video.DirectShow;
-using TimeTracker.Form;
 
 namespace TimeTracker
 {
@@ -45,6 +44,7 @@ namespace TimeTracker
         private DateTimeOffset StartTimeInterval;
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Timer timerForIdle;
+        private int keystrokesForIdle = 0;
 
         public DateTimeOffset StartTime
         {
@@ -74,11 +74,11 @@ namespace TimeTracker
             int timeIntervalMinutes;
             if (!int.TryParse(ConfigurationManager.AppSettings["TimeIntervalInMinutes"], out timeIntervalMinutes))
             {
-                timeIntervalMinutes = 5; //Default time set to 5 minutes
+                timeIntervalMinutes = 10; //Default Idle time set to 10 minutes
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = 3 * 60 * 1000;
+            timer.Interval = 3 * 60 * 1000; //Interval For Screenshot & Time Logg in DB after every 3 minutes
             timer.Tick += Timer_Tick;
             //Timer For Idle 
             timerForIdle = new System.Windows.Forms.Timer();
@@ -90,17 +90,12 @@ namespace TimeTracker
             return this.StartTime;
         }
 
-        public async Task<TimeTrackerData> Stop()
+        public async Task Stop()
         {
-            if (!Tracking)
-            {
-                return null;
-            }
-            var endTimeSaved = await SaveTimerData();
+            await SaveTimerData();
             this.Tracking = false;
             timer.Stop();
             timerForIdle.Stop();
-            return new TimeTrackerData(_startTime, endTimeSaved);
         }
 
         public String Elapsed
@@ -133,18 +128,17 @@ namespace TimeTracker
         }  
         private async void Timer_Tick_ForIldeCheck(object sender, EventArgs e)
         {
-            int keyStrokes = CheckActivity();
-            idleCheckAfter1Min(keyStrokes);
+            idleTimeCheck();
         }
 
-        private async Task<DateTimeOffset> SaveTimerData()
+        private async Task SaveTimerData()
         {
             DBAccessContext dBAccessContext = new DBAccessContext();
             InternetManager ineterntM = new InternetManager(_application);
             var internetAvailavble = await ineterntM.CheckInternetConnected();
             int keyStrokes = CheckActivity();//Get KeyStrokes
+            keystrokesForIdle += keyStrokes;
             TimeSpan elapsedTime = GetIntervalTimeElasped();
-            this.StartTimeInterval = DateTimeOffset.Now;
             if (internetAvailavble)
             {
                 await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
@@ -155,7 +149,6 @@ namespace TimeTracker
                 await dBAccessContext.StoreTrackerDataToLocal(elapsedTime);
             }
             _application.SetTotalTime();
-            return StartTimeInterval;
         }
 
         private async Task Captures(int keyStrokes)
@@ -271,14 +264,10 @@ namespace TimeTracker
             }
             return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
         }
-        public int CheckActivity(bool is1MinCheck = false)
+        public int CheckActivity()
         {
             var totalKeyStrokeCount = keystrokeCount + mouseClickCount + mouseWheelCount;
-            // Reset counters for next interval
-            if (!is1MinCheck)
-            {
-                ResetKeyCount();
-            }
+            ResetKeyCount();
             return totalKeyStrokeCount;
         }
 
@@ -303,16 +292,18 @@ namespace TimeTracker
         #endregion
 
         #region Idle Time Detection Code
-        private async Task idleCheckAfter1Min(int oldKeyStrokes)
+        private async Task idleTimeCheck()
         {
-            await Task.Delay(TimeSpan.FromMinutes(1));
+            //await Task.Delay(TimeSpan.FromMinutes(1));
             int keysThresholdToStopTracking;
             if (!int.TryParse(ConfigurationManager.AppSettings["KeysThresholdToStopTracking"], out keysThresholdToStopTracking))
             {
                 keysThresholdToStopTracking = 5; //Default key threshhold set to 5 keys in a default 5 minutes
             }
-            int keyStrokesIn1Min = CheckActivity(true);
-            if (keyStrokesIn1Min + oldKeyStrokes <= keysThresholdToStopTracking)
+            var totalKeyStrokesInLastInterval = keystrokesForIdle;
+            keystrokesForIdle = 0;
+            int keyStrokesAfterLastAdded = CheckActivity();
+            if (keyStrokesAfterLastAdded + totalKeyStrokesInLastInterval <= keysThresholdToStopTracking)
             {
                 await _application.Pause_Tracking();
                 _application.ShowIdleAlert();

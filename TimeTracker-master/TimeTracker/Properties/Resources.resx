@@ -176,7 +176,7 @@
     <value>Delete entries</value>
   </data>
   <data name="Application_statsTotal_Text" xml:space="preserve">
-    <value>Total: {0}</value>
+    <value>Total Time Logged: {0}</value>
   </data>
   <data name="Application_fileErrorMessageBox_Caption" xml:space="preserve">
     <value>File error</value>
