@@ -139,6 +139,7 @@ namespace TimeTracker
             int keyStrokes = CheckActivity();//Get KeyStrokes
             keystrokesForIdle += keyStrokes;
             TimeSpan elapsedTime = GetIntervalTimeElasped();
+            this.StartTimeInterval = DateTimeOffset.Now;
             if (internetAvailavble)
             {
                 await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
