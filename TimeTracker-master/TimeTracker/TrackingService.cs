@@ -6,7 +6,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TimeTracker.Model;
 using TimeTracker.Utilities;
 using AForge.Video.DirectShow;
 
@@ -89,13 +88,24 @@ namespace TimeTracker
             await SaveTimerData();
             return this.StartTime;
         }
+        private void ResetIdleTimer()
+        {
+            if (Tracking)
+            {
+                timerForIdle.Stop();
+                timerForIdle.Start();
+            }
+        }
 
         public async Task Stop()
         {
-            await SaveTimerData();
-            this.Tracking = false;
-            timer.Stop();
-            timerForIdle.Stop();
+            if (Tracking)
+            {
+                await SaveTimerData();
+                this.Tracking = false;
+                timer.Stop();
+                timerForIdle.Stop();
+            }
         }
 
         public String Elapsed
@@ -125,7 +135,7 @@ namespace TimeTracker
         private async void Timer_Tick(object sender, EventArgs e)
         {
             await SaveTimerData();
-        }  
+        }
         private async void Timer_Tick_ForIldeCheck(object sender, EventArgs e)
         {
             idleTimeCheck();
@@ -159,8 +169,7 @@ namespace TimeTracker
             {
                 await SaveCaptures(cameraCapture, null, true);
             }
-            Bitmap screenshot = CaptureScreen();
-            await SaveCaptures(screenshot, keyStrokes, false);
+            await CaptureScreen(keyStrokes);
         }
 
         private async Task SaveCaptures(Bitmap screenshot, int? keyStrokes, bool isCameraCapture)
@@ -181,15 +190,22 @@ namespace TimeTracker
             return elapsedTime;
         }
 
-        public Bitmap CaptureScreen()
+        public async Task CaptureScreen(int? keyStrokes)
         {
-            Rectangle bounds = Screen.PrimaryScreen.Bounds;
-            Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
-            using (Graphics g = Graphics.FromImage(bitmap))
+            Screen[] screens = Screen.AllScreens;
+            for (int i = 0; i < screens.Length; i++)
             {
-                g.CopyFromScreen(Point.Empty, Point.Empty, bounds.Size);
+                if (screens[i].Bounds.Contains(Cursor.Position))
+                {
+                    Bitmap screenshot = new Bitmap(screens[i].Bounds.Width, screens[i].Bounds.Height);
+                    using (Graphics graphics = Graphics.FromImage(screenshot))
+                    {
+                        graphics.CopyFromScreen(screens[i].Bounds.Location, Point.Empty, screens[i].Bounds.Size);
+                    }
+                    await SaveCaptures(screenshot, keyStrokes, false);
+                    break;
+                }
             }
-            return bitmap;
         }
 
         static async Task<Bitmap> CapturePhotoAsync()
@@ -244,6 +260,7 @@ namespace TimeTracker
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
                 keystrokeCount++;
+                ResetIdleTimer();
             }
             return CallNextHookEx(_keyboardHookID, nCode, wParam, lParam);
         }
@@ -256,11 +273,13 @@ namespace TimeTracker
                 {
                     // Left or right mouse button down
                     mouseClickCount++;
+                    ResetIdleTimer();
                 }
                 else if (wParam == (IntPtr)WM_MOUSEWHEEL)
                 {
                     // Mouse wheel scrolled
                     mouseWheelCount++;
+                    ResetIdleTimer();
                 }
             }
             return CallNextHookEx(_mouseHookID, nCode, wParam, lParam);
@@ -295,20 +314,9 @@ namespace TimeTracker
         #region Idle Time Detection Code
         private async Task idleTimeCheck()
         {
-            //await Task.Delay(TimeSpan.FromMinutes(1));
-            int keysThresholdToStopTracking;
-            if (!int.TryParse(ConfigurationManager.AppSettings["KeysThresholdToStopTracking"], out keysThresholdToStopTracking))
-            {
-                keysThresholdToStopTracking = 5; //Default key threshhold set to 5 keys in a default 5 minutes
-            }
-            var totalKeyStrokesInLastInterval = keystrokesForIdle;
-            keystrokesForIdle = 0;
-            int keyStrokesAfterLastAdded = CheckActivity();
-            if (keyStrokesAfterLastAdded + totalKeyStrokesInLastInterval <= keysThresholdToStopTracking)
-            {
-                await _application.Pause_Tracking();
-                _application.ShowIdleAlert();
-            }
+            timerForIdle.Stop();
+            await _application.Pause_Tracking();
+            _application.ShowIdleAlert();
         }
         #endregion
     }

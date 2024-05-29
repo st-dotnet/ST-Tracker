@@ -226,6 +226,7 @@
     <Content Include="Images\clock.ico" />
     <Content Include="Images\clock.svg" />
     <Content Include="logo.ico" />
+    <None Include="Resources\dummy_profile.png" />
     <None Include="Resources\SupremeLogo.png" />
     <None Include="Resources\logo.jpg" />
     <None Include="Resources\2.png" />

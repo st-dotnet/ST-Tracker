@@ -133,6 +133,7 @@ namespace TimeTracker.Form
             // profilePictureBox
             // 
             resources.ApplyResources(this.profilePictureBox, "profilePictureBox");
+            this.profilePictureBox.Image = global::TimeTracker.Properties.Resources.dummy_profile;
             this.profilePictureBox.Name = "profilePictureBox";
             this.profilePictureBox.TabStop = false;
             // 

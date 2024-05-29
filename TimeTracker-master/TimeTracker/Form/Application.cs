@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using TimeTracker.Model;
 using TimeTracker.Utilities;
 using System.Threading.Tasks;
 using System.Drawing;
@@ -117,6 +116,7 @@ namespace TimeTracker.Form
         public async Task Pause_Tracking()
         {
             await TrackingService.Stop();
+            SetTotalTime();
             RefreshTimer.Stop();
             RefreshTrackingButtons();
         }
@@ -128,6 +128,7 @@ namespace TimeTracker.Form
         private async Task stopTracking()
         {
             await TrackingService.Stop();
+            SetTotalTime();
             RefreshTimer.Stop();
             RefreshTrackingButtons();
             this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
@@ -153,6 +154,13 @@ namespace TimeTracker.Form
             if (tracking)
             {
                 await stopTracking();
+            }
+            else
+            {
+                if(this.idlePanel.Visible == true)
+                {
+                    await UpdateIdleTime(false);
+                }
             }
         }
 
@@ -209,7 +217,6 @@ namespace TimeTracker.Form
         {
             this.IdleTimeDetection = DateTimeOffset.Now;
             this.toolStripMain.Enabled = false;
-            SetTotalTime();
             SetApplicationToFront();
             this.idlePanel.Visible = true;
         }

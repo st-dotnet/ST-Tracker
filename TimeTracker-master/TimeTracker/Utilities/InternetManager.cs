@@ -35,7 +35,7 @@ namespace TimeTracker.Utilities
                 using (var ping = new Ping())
                 {
                     var result = ping.Send("8.8.8.8", 2000);
-                    return (result.Status == IPStatus.Success);
+                    return result.Status == IPStatus.Success;
                 }
             }
             catch (Exception)
