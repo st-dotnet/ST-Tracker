@@ -21,14 +21,6 @@ namespace DBModels.Model
         public bool IsCameraCapture { get; set; }
     }
 
-    public class TrackerDataOffline
-    {
-        public Guid TrackerId { get; set; }
-        public DateTime Date { get; set; }
-        public TimeSpan TotalTime { get; set; }
-        public TimeSpan IdleTime { get; set; }
-        public string EmployeeUsername { get; set; }
-    }
     public class UserInformation
     {
         public string Username { get; set; }

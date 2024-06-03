@@ -94,6 +94,12 @@
 			<Component Id="Icon.ico" Guid="69775755-94fa-4f17-a361-9330d148daf3">
 			  <File Id="Icon.ico" Name="Icon.ico" Source="$(var.TimeTracker_TargetDir)Icon.ico" />
 			</Component>
+			<Component Id="System.Runtime.Caching.dll" Guid="471e1a79-f027-426c-bf65-20f864443141">
+			  <File Id="System.Runtime.Caching.dll" Name="System.Runtime.Caching.dll" Source="$(var.TimeTracker_TargetDir)System.Runtime.Caching.dll" />
+			</Component>
+			<Component Id="System.Data.SQLite.dll" Guid="354ecd96-8d52-450b-98c5-005193ab07a9">
+			  <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.TimeTracker_TargetDir)System.Data.SQLite.dll" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 	<Fragment>

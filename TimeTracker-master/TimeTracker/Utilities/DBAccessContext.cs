@@ -11,73 +11,26 @@ namespace TimeTracker.Utilities
 {
     public class DBAccessContext
     {
-        private readonly UserInformationManager userManager;
-        private readonly UserInformationManager offlineTrackerDataManager;
+        private readonly UserLocalStorage storage;
+        private readonly TrackerLocalStorage _trackerStorage;
+        private readonly InternetManager _internetManager;
 
-        public DBAccessContext()
+        public DBAccessContext(TrackerLocalStorage trackerStorage, InternetManager internetManager)
         {
-            userManager = new UserInformationManager("user_info.xml");
-            offlineTrackerDataManager = new UserInformationManager("tracker_info.xml");
+            _trackerStorage = trackerStorage;
+            storage = new UserLocalStorage();
+            _internetManager = internetManager;
         }
         #region Save Tracker Data to Database
         public async Task AddUpdateTrackerInfo(TimeSpan statTotal)
         {
             try
             {
-                var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
-                if (offlineDataToStore != null)
-                {
-                    await TryStoreOfflineDataToDb(offlineDataToStore);
-                }
-                await StoreTrackerDataToDB(statTotal);
+                var internetAvailavble = await _internetManager.CheckInternetConnected();
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-            }
-        }
-
-        public async Task TryStoreOfflineDataToDb(TrackerDataOffline offlineTrackerData)
-        {
-            var offlineEmpId = userManager.RetrieveUserInformation().EmployeeId;
-            TrackerData offlineDataToStore = new TrackerData
-            {
-                TrackerId = offlineTrackerData.TrackerId,
-                Date = offlineTrackerData.Date,
-                TotalTime = offlineTrackerData.TotalTime,
-                IdleTime = offlineTrackerData.IdleTime,
-                EmployeeId = offlineEmpId,
-            };
-            using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
-            {
-                string addUpdateQuery = "";
-                var trackerData = await CheckTrackingExists(offlineTrackerData.Date, offlineDataToStore.EmployeeId);
-                if (trackerData != null)
-                {
-                    offlineDataToStore.TrackerId = trackerData.TrackerId;
-                    offlineDataToStore.TotalTime = trackerData.TotalTime + offlineDataToStore.TotalTime;
-                    offlineDataToStore.IdleTime = trackerData.IdleTime + offlineDataToStore.IdleTime;
-                    addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime, IdleTime = @IdleTime  WHERE TrackerId = @TrackerId";
-                }
-                else
-                {
-                    addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId, IdleTime)
-                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
-                }
-                db.Execute(addUpdateQuery, offlineDataToStore);
-                offlineTrackerDataManager.RemoveOfflineTrackerData();
-            }
-
-        }
-        private async Task StoreTrackerDataToDB(TimeSpan statTotal)
-        {
-            try
-            {
-                UserInformation userInfo = userManager.RetrieveUserInformation();
                 var dateTime = GetPreviousDate();
-                var empId = userManager.RetrieveUserInformation().EmployeeId;
-                TrackerData newData = new TrackerData
+                var empId = storage.RetrieveUserInformation().EmployeeId;
+                TrackerData newTrackerData = new TrackerData
                 {
                     TrackerId = Guid.NewGuid(),
                     Date = dateTime.Date,
@@ -85,17 +38,40 @@ namespace TimeTracker.Utilities
                     IdleTime = TimeSpan.Zero,
                     EmployeeId = empId,
                 };
+                TrackerData offlineTrackerData = new TrackerData
+                {
+                    TrackerId = newTrackerData.TrackerId,
+                    Date = newTrackerData.Date,
+                    TotalTime = newTrackerData.TotalTime,
+                    IdleTime = newTrackerData.IdleTime,
+                    EmployeeId = newTrackerData.EmployeeId
+                };
+                await _trackerStorage.SaveTrackerDataOffline(offlineTrackerData);
+                if (internetAvailavble)
+                {
+                    await StoreTrackerDataToDB(newTrackerData);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+        }
 
+        private async Task StoreTrackerDataToDB(TrackerData newTrackerData)
+        {
+            try
+            {
                 using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
                 {
                     string addUpdateQuery = "";
-                    var trackerData = await CheckTrackingExists(dateTime.Date, empId); // Check if Tracking exists for the same day
+                    var trackerData = await CheckTrackingExists(newTrackerData.Date, newTrackerData.EmployeeId); // Check if Tracking exists for the same day
                     if (trackerData != null)
                     {
-                        newData.TrackerId = trackerData.TrackerId;
-                        newData.EmployeeId = trackerData.EmployeeId;
-                        newData.TotalTime = trackerData.TotalTime + statTotal;
-                        newData.IdleTime = trackerData.IdleTime;
+                        newTrackerData.TrackerId = trackerData.TrackerId;
+                        newTrackerData.EmployeeId = trackerData.EmployeeId;
+                        newTrackerData.TotalTime = trackerData.TotalTime + newTrackerData.TotalTime;
+                        newTrackerData.IdleTime = trackerData.IdleTime;
                         addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime WHERE TrackerId = @TrackerId";
                     }
                     else
@@ -103,7 +79,7 @@ namespace TimeTracker.Utilities
                         addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId , IdleTime)
                                     VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
                     }
-                    db.Execute(addUpdateQuery, newData);
+                    db.Execute(addUpdateQuery, newTrackerData);
                 }
             }
             catch (SqlException ex)
@@ -114,29 +90,31 @@ namespace TimeTracker.Utilities
 
         public async Task RemoveIdleTimeFromActual(TimeSpan idleTime, bool isYesWorking)
         {
+            var internetAvailavble = await _internetManager.CheckInternetConnected();
+            var dateTime = GetPreviousDate();
+            var empId = storage.RetrieveUserInformation().EmployeeId;
+            await _trackerStorage.RemoveIdleTimeFromActualOffline(idleTime, isYesWorking, dateTime, empId);
+            if (internetAvailavble)
+            {
+                await RemoveIdleTimeFromActualDB(idleTime, isYesWorking, dateTime, empId);
+            }
+        }
+
+        public async Task RemoveIdleTimeFromActualDB(TimeSpan idleTime, bool isYesWorking, DateTime dateTime, Guid? empId)
+        {
             try
             {
-                var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
-                if (offlineDataToStore != null)
-                {
-                    await TryStoreOfflineDataToDb(offlineDataToStore);
-                }
-                UserInformation userInfo = userManager.RetrieveUserInformation();
-                var dateTime = GetPreviousDate();
-                var empId = userManager.RetrieveUserInformation().EmployeeId;
                 using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
                 {
-                    var trackerData = await CheckTrackingExists(dateTime.Date, empId); // Check if Tracking exists for the same day
+                    var trackerData = await CheckTrackingExists(dateTime.Date, empId);
                     if (trackerData != null)
                     {
                         string updateQuery = "";
-
                         int timeIntervalMinutes;
                         if (!int.TryParse(ConfigurationManager.AppSettings["TimeIntervalInMinutes"], out timeIntervalMinutes))
                         {
                             timeIntervalMinutes = 10; //Default Idle time set to 10 minutes
                         }
-
                         TimeSpan tenMinutes = new TimeSpan(0, timeIntervalMinutes, 0);//ChangeIdleTime
                         TrackerData updatedData = new TrackerData
                         {
@@ -162,7 +140,7 @@ namespace TimeTracker.Utilities
             try
             {
                 var dateTime = GetPreviousDate();
-                var empId = userManager.RetrieveUserInformation().EmployeeId;
+                var empId = storage.RetrieveUserInformation().EmployeeId;
                 var trackerData = await CheckTrackingExists(dateTime.Date, empId);
                 TrackerScreenshotData newData = new TrackerScreenshotData
                 {
@@ -183,28 +161,6 @@ namespace TimeTracker.Utilities
             {
                 return;
             }
-        }
-        #endregion
-
-        #region Store Tracker Data Locally
-        public async Task StoreTrackerDataToLocal(TimeSpan statTotal)
-        {
-            UserInformation userInfo = userManager.RetrieveUserInformation();
-            var dateTime = GetPreviousDate();
-            TrackerDataOffline newDataOffline = new TrackerDataOffline
-            {
-                TrackerId = Guid.NewGuid(),
-                Date = dateTime.Date,
-                TotalTime = statTotal,
-                IdleTime = TimeSpan.Zero,
-                EmployeeUsername = userInfo.Username,
-            };
-            offlineTrackerDataManager.SaveTrackerDataOffline(newDataOffline);
-        }
-
-        public async Task UpdateIdleData(TimeSpan idleTime, bool isYesWorking)
-        {
-            offlineTrackerDataManager.UpdateIldeTimeOffline(idleTime, isYesWorking);
         }
         #endregion
 
@@ -229,7 +185,7 @@ namespace TimeTracker.Utilities
             {
                 if (string.IsNullOrEmpty(username))
                 {
-                    username = userManager.RetrieveUserInformation().Username;
+                    username = storage.RetrieveUserInformation().Username;
                 }
                 using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
                 {
@@ -253,38 +209,61 @@ namespace TimeTracker.Utilities
 
         public async Task<EmployeeData> GetEmployeeDetail()
         {
-            var username = userManager.RetrieveUserInformation().Username;
+            var username = storage.RetrieveUserInformation().Username;
             using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
             {
                 return await db.QuerySingleOrDefaultAsync<EmployeeData>("SELECT EmployeeId, FirstName, LastName, ProfilePicture FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
             }
         }
-        public async Task<TimeSpan> GetTotalTime(bool isInternet, TimeSpan oldtotalTimeOnline)
+        public async Task<TimeSpan> GetTotalTime()
         {
             var dateTime = GetPreviousDate();
-            var empId = userManager.RetrieveUserInformation().EmployeeId;
-            if (isInternet)
+            var empId = storage.RetrieveUserInformation().EmployeeId;
+            var localTrackerData = await _trackerStorage.CheckOfflineTrackerDataExists(dateTime, empId);
+            if (localTrackerData != null)
             {
-                var trackerData = await CheckTrackingExists(dateTime.Date, empId);
-                if (trackerData != null)
-                {
-                    return trackerData.TotalTime + trackerData.IdleTime;
-                }
+                return localTrackerData.TotalTime + localTrackerData.IdleTime;
             }
-            else
-            {
-                var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
-                if (offlineDataToStore != null)
-                {
-                    return oldtotalTimeOnline + offlineDataToStore.TotalTime + offlineDataToStore.IdleTime;
-                }
-                else
-                {
-                    return oldtotalTimeOnline;
-                }
-            }
-
             return TimeSpan.Zero;
+        }
+        public async Task SyncLocalDataToServer()
+        {
+            var dateTime = GetPreviousDate();
+            var empId = storage.RetrieveUserInformation().EmployeeId;
+            var localTrackerData = await _trackerStorage.CheckOfflineTrackerDataExists(dateTime, empId);
+            if (localTrackerData != null)
+            {
+                await SyncLocalTrackerDataToDB(localTrackerData);
+            }
+        }
+        private async Task SyncLocalTrackerDataToDB(TrackerData newTrackerData)
+        {
+            try
+            {
+                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
+                {
+                    string addUpdateQuery = "";
+                    var trackerData = await CheckTrackingExists(newTrackerData.Date, newTrackerData.EmployeeId);
+                    if (trackerData != null)
+                    {
+                        newTrackerData.TrackerId = newTrackerData.TrackerId;
+                        newTrackerData.EmployeeId = newTrackerData.EmployeeId;
+                        newTrackerData.TotalTime = newTrackerData.TotalTime;
+                        newTrackerData.IdleTime = newTrackerData.IdleTime;
+                        addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime WHERE TrackerId = @TrackerId";
+                    }
+                    else
+                    {
+                        addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId , IdleTime)
+                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
+                    }
+                    db.Execute(addUpdateQuery, newTrackerData);
+                }
+            }
+            catch (SqlException ex)
+            {
+                return;
+            }
         }
     }
 }

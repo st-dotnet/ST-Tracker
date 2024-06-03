@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -8,15 +7,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TimeTracker.Utilities;
 using AForge.Video.DirectShow;
+using System.Configuration;
 
 namespace TimeTracker
 {
     public class TrackingService
     {
         private readonly TimeTracker.Form.Application _application;
-        public TrackingService(TimeTracker.Form.Application application)
+        private readonly DBAccessContext _dBAccessContext;
+        private readonly InternetManager _internetManager;
+
+        public TrackingService(TimeTracker.Form.Application application, DBAccessContext dBAccessContext, InternetManager internetManager)
         {
             _application = application;
+            _dBAccessContext = dBAccessContext;
+            _internetManager = internetManager;
         }
 
         #region Activity Check Fields
@@ -77,7 +82,7 @@ namespace TimeTracker
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = 3 * 60 * 1000; //Interval For Screenshot & Time Logg in DB after every 3 minutes
+            timer.Interval = 2 * 60 * 1000; //Interval For Screenshot & Time Logg in DB after every 3 minutes
             timer.Tick += Timer_Tick;
             //Timer For Idle 
             timerForIdle = new System.Windows.Forms.Timer();
@@ -143,21 +148,15 @@ namespace TimeTracker
 
         private async Task SaveTimerData()
         {
-            DBAccessContext dBAccessContext = new DBAccessContext();
-            InternetManager ineterntM = new InternetManager(_application);
-            var internetAvailavble = await ineterntM.CheckInternetConnected();
+            var internetAvailavble = await _internetManager.CheckInternetConnected();
             int keyStrokes = CheckActivity();//Get KeyStrokes
             keystrokesForIdle += keyStrokes;
             TimeSpan elapsedTime = GetIntervalTimeElasped();
             this.StartTimeInterval = DateTimeOffset.Now;
+            await _dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
             if (internetAvailavble)
             {
-                await dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
                 await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
-            }
-            else
-            {
-                await dBAccessContext.StoreTrackerDataToLocal(elapsedTime);
             }
             _application.SetTotalTime();
         }
@@ -174,14 +173,13 @@ namespace TimeTracker
 
         private async Task SaveCaptures(Bitmap screenshot, int? keyStrokes, bool isCameraCapture)
         {
-            DBAccessContext dBAccessContext = new DBAccessContext();
             byte[] screenshotBytes;
             using (MemoryStream stream = new MemoryStream())
             {
                 screenshot.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 screenshotBytes = stream.ToArray();
             }
-            await dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes, isCameraCapture);
+            await _dBAccessContext.SaveScreenshot(screenshotBytes, keyStrokes, isCameraCapture);
         }
 
         public TimeSpan GetIntervalTimeElasped()
@@ -316,7 +314,7 @@ namespace TimeTracker
         {
             timerForIdle.Stop();
             await _application.Pause_Tracking();
-            _application.ShowIdleAlert();
+            _application.ShowIdle();
         }
         #endregion
     }

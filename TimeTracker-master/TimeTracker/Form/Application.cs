@@ -11,13 +11,11 @@ namespace TimeTracker.Form
 {
     public partial class Application : System.Windows.Forms.Form
     {
-        const int CATEGORY_MAXLENGTH = 255;
         private TrackingService TrackingService;
-        private InternetManager InternetManager;
+        private DBAccessContext _dbAccessContext;
+        public TrackerLocalStorage _trackerStorage;
+        public InternetManager InternetManager;
         private Timer RefreshTimer;
-        private ToolTip toolTip = new ToolTip();
-        private FileInfo file;
-        private TimeSpan totalTimeToShow;
         private const int SW_RESTORE = 9;
         private DateTimeOffset IdleTimeDetection;
 
@@ -31,9 +29,12 @@ namespace TimeTracker.Form
 
         public Application()
         {
-            TrackingService = new TrackingService(this);
+            _trackerStorage = new TrackerLocalStorage();
             InternetManager = new InternetManager(this);
+            _dbAccessContext = new DBAccessContext(_trackerStorage, InternetManager);
+            TrackingService = new TrackingService(this, _dbAccessContext, InternetManager);
 
+            AssignEmployeeValues();
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             RefreshTimer = new Timer
@@ -50,7 +51,6 @@ namespace TimeTracker.Form
             this.Refresh();
             RefreshTitle();
             RefreshTrackingButtons();
-            AssignEmployeeValues();
             SetTotalTime();
             this.TopMost = true;
         }
@@ -65,33 +65,24 @@ namespace TimeTracker.Form
         #region Set Employee Data
         private async void AssignEmployeeValues()
         {
-            bool isInternet = await InternetManager.CheckInternetConnected();
-            if (isInternet)
+            var employeeData = await _dbAccessContext.GetEmployeeDetail();
+            if (employeeData.ProfilePicture != null && employeeData.ProfilePicture.Length > 0)
             {
-                DBAccessContext dBAccessContext = new DBAccessContext();
-                var employeeData = await dBAccessContext.GetEmployeeDetail();
-                if (employeeData.ProfilePicture != null && employeeData.ProfilePicture.Length > 0)
+                System.Drawing.Image profileImage;
+                using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
                 {
-                    System.Drawing.Image profileImage;
-                    using (MemoryStream ms = new MemoryStream(employeeData.ProfilePicture))
-                    {
-                        profileImage = System.Drawing.Image.FromStream(ms);
-                    }
-                    profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                    profilePictureBox.Image = profileImage;
+                    profileImage = System.Drawing.Image.FromStream(ms);
                 }
-                this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
+                profilePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                profilePictureBox.Image = profileImage;
             }
+            this.EmployeeName.Text = employeeData.FirstName + " " + employeeData.LastName;
         }
         #endregion
 
         public async void SetTotalTime()
         {
-            DBAccessContext dBAccessContext = new DBAccessContext();
-            var isInternet = await InternetManager.CheckInternetConnected();
-            var totalTime = await dBAccessContext.GetTotalTime(isInternet, totalTimeToShow);
-            if (isInternet)
-                totalTimeToShow = totalTime;
+            var totalTime = await _dbAccessContext.GetTotalTime();
             this.statsTotalText.Text = String.Format(Properties.Resources.Application_statsTotal_Text, totalTime.Format());
         }
 
@@ -157,7 +148,7 @@ namespace TimeTracker.Form
             }
             else
             {
-                if(this.idlePanel.Visible == true)
+                if (this.idlePanel.Visible == true)
                 {
                     await UpdateIdleTime(false);
                 }
@@ -213,7 +204,7 @@ namespace TimeTracker.Form
                 this.internetStatus.BackColor = Color.FromArgb(234, 31, 75);
             }
         }
-        public void ShowIdleAlert()
+        public void ShowIdle()
         {
             this.IdleTimeDetection = DateTimeOffset.Now;
             this.toolStripMain.Enabled = false;
@@ -232,20 +223,15 @@ namespace TimeTracker.Form
         }
         private async Task UpdateIdleTime(bool isYesWorking)
         {
-            DBAccessContext dBAccessContext = new DBAccessContext();
             TimeSpan elapsedIdlePopupTime = DateTimeOffset.Now - this.IdleTimeDetection;
-            var internetAvailable = await InternetManager.CheckInternetConnected();
-            if (internetAvailable)
-            {
-                await dBAccessContext.RemoveIdleTimeFromActual(elapsedIdlePopupTime, isYesWorking);
-            }
-            else
-            {
-                await dBAccessContext.UpdateIdleData(elapsedIdlePopupTime, isYesWorking);
-            }
+            await _dbAccessContext.RemoveIdleTimeFromActual(elapsedIdlePopupTime, isYesWorking);
             this.idlePanel.Visible = false;
             this.toolStripMain.Enabled = true;
             SetTotalTime();
+        }
+        public async Task SyncLocalDataToServer()
+        {
+            await _dbAccessContext.SyncLocalDataToServer();
         }
     }
 }

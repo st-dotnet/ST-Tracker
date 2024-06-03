@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -9,11 +11,11 @@ namespace TimeTracker.Utilities
     {
         private Timer internetCheckTimer;
         private readonly TimeTracker.Form.Application _application;
-        private readonly UserInformationManager offlineTrackerDataManager;
+        private bool isSaveToDB = false;
+
         public InternetManager(TimeTracker.Form.Application application)
         {
             _application = application;
-            offlineTrackerDataManager = new UserInformationManager("tracker_info.xml");
         }
 
         public void InternetCheckInitialize()
@@ -48,20 +50,19 @@ namespace TimeTracker.Utilities
             var internetAvailable = false;
             if (IsInternetAvailable())
             {
-                await SaveLocalDataToDBIfExists();
+                if (isSaveToDB == true)
+                {
+                    isSaveToDB = false;
+                    await _application.SyncLocalDataToServer();
+                }
                 internetAvailable = true;
+            }
+            else
+            {
+                isSaveToDB = true;
             }
             _application.InternetStatus(internetAvailable);
             return internetAvailable;
-        }
-        public async Task SaveLocalDataToDBIfExists()
-        {
-            var offlineDataToStore = offlineTrackerDataManager.RetrieveTrackerDataIfExists();
-            if (offlineDataToStore != null)
-            {
-                DBAccessContext dBAccessContext = new DBAccessContext();
-                await dBAccessContext.TryStoreOfflineDataToDb(offlineDataToStore);
-            }
         }
     }
 }
