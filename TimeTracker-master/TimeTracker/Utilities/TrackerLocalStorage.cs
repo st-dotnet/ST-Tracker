@@ -12,7 +12,6 @@ namespace TimeTracker.Utilities
         public TrackerLocalStorage()
         {
             CreateDatabaseAndTrackerTable();
-            DeletePreviousOfflineRecords();
         }
         public void CreateDatabaseAndTrackerTable()
         {
@@ -115,60 +114,49 @@ namespace TimeTracker.Utilities
             }
         }
 
-        public async Task RemoveIdleTimeFromActualOffline(TimeSpan idleTime, bool isYesWorking, DateTime dateTime, Guid? empId)
-        {
-            using (var connection = new SQLiteConnection(ConnectionClass.sqliteConnStr()))
-            {
-                connection.Open();
-                var offlineTrackerData = await CheckOfflineTrackerDataExists(dateTime, empId);
-                if (offlineTrackerData != null)
-                {
-                    string updateQuery = "";
-                    int timeIntervalMinutes;
-                    if (!int.TryParse(ConfigurationManager.AppSettings["TimeIntervalInMinutes"], out timeIntervalMinutes))
-                    {
-                        timeIntervalMinutes = 10; //Default Idle time set to 10 minutes
-                    }
-                    TimeSpan tenMinutes = new TimeSpan(0, timeIntervalMinutes, 0);//ChangeIdleTime
-                    TrackerData updatedData = new TrackerData
-                    {
-                        TrackerId = offlineTrackerData.TrackerId,
-                        TotalTime = offlineTrackerData.TotalTime > tenMinutes ? offlineTrackerData.TotalTime.Subtract(new TimeSpan(0, timeIntervalMinutes, 0)) : TimeSpan.Zero,//ChangeIdleTime
-                        IdleTime = isYesWorking ? offlineTrackerData.IdleTime.Add(new TimeSpan(0, timeIntervalMinutes, 0)) + idleTime : offlineTrackerData.IdleTime,//ChangeIdleTime
-                    };
-                    updateQuery = @"UPDATE TrackerDataOffline SET TotalTime = @TotalTime, IdleTime = @IdleTime WHERE TrackerId = @TrackerId;";
-                    using (var command = new SQLiteCommand(updateQuery, connection))
-                    {
-                        command.Parameters.AddWithValue("@TrackerId", updatedData.TrackerId.ToString());
-                        command.Parameters.AddWithValue("@TotalTime", updatedData.TotalTime.ToString());
-                        command.Parameters.AddWithValue("@IdleTime", updatedData.IdleTime.ToString());
-                        command.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
+        //public async Task RemoveIdleTimeFromActualOffline(TimeSpan idleTime, bool isYesWorking, DateTime dateTime, Guid? empId)
+        //{
+        //    using (var connection = new SQLiteConnection(ConnectionClass.sqliteConnStr()))
+        //    {
+        //        connection.Open();
+        //        var offlineTrackerData = await CheckOfflineTrackerDataExists(dateTime, empId);
+        //        if (offlineTrackerData != null)
+        //        {
+        //            string updateQuery = "";
+        //            int timeIntervalMinutes;
+        //            if (!int.TryParse(ConfigurationManager.AppSettings["TimeIntervalInMinutes"], out timeIntervalMinutes))
+        //            {
+        //                timeIntervalMinutes = 10; //Default Idle time set to 10 minutes
+        //            }
+        //            TimeSpan tenMinutes = new TimeSpan(0, timeIntervalMinutes, 0);//ChangeIdleTime
+        //            TrackerData updatedData = new TrackerData
+        //            {
+        //                TrackerId = offlineTrackerData.TrackerId,
+        //                TotalTime = offlineTrackerData.TotalTime > tenMinutes ? offlineTrackerData.TotalTime.Subtract(new TimeSpan(0, timeIntervalMinutes, 0)) : TimeSpan.Zero,//ChangeIdleTime
+        //                IdleTime = isYesWorking ? offlineTrackerData.IdleTime.Add(new TimeSpan(0, timeIntervalMinutes, 0)) + idleTime : offlineTrackerData.IdleTime,//ChangeIdleTime
+        //            };
+        //            updateQuery = @"UPDATE TrackerDataOffline SET TotalTime = @TotalTime, IdleTime = @IdleTime WHERE TrackerId = @TrackerId;";
+        //            using (var command = new SQLiteCommand(updateQuery, connection))
+        //            {
+        //                command.Parameters.AddWithValue("@TrackerId", updatedData.TrackerId.ToString());
+        //                command.Parameters.AddWithValue("@TotalTime", updatedData.TotalTime.ToString());
+        //                command.Parameters.AddWithValue("@IdleTime", updatedData.IdleTime.ToString());
+        //                command.ExecuteNonQuery();
+        //            }
+        //        }
+        //    }
+        //}
         public async Task DeletePreviousOfflineRecords()
         {
-            var date = GetPreviousDate();
             using (var connection = new SQLiteConnection(ConnectionClass.sqliteConnStr()))
             {
                 connection.Open();
-                string deleteQuery = "DELETE FROM TrackerDataOffline WHERE Date < @Date;";
+                string deleteQuery = "DELETE FROM TrackerDataOffline;";
                 using (var command = new SQLiteCommand(deleteQuery, connection))
                 {
-                    command.Parameters.AddWithValue("@Date", date.Date.ToString("yyyy-MM-dd"));
                     int rowsAffected = command.ExecuteNonQuery();
                 }
             }
-        }
-        private DateTime GetPreviousDate()
-        {
-            var dateTime = DateTime.Now;
-            if (dateTime.TimeOfDay >= TimeSpan.Zero && dateTime.TimeOfDay < TimeSpan.FromHours(3))
-            {
-                dateTime = dateTime.AddDays(-1);
-            }
-            return dateTime;
         }
     }
 }

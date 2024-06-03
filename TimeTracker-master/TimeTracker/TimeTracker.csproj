@@ -250,6 +250,8 @@
     <Content Include="Images\clock.ico" />
     <Content Include="Images\clock.svg" />
     <Content Include="logo.ico" />
+    <Content Include="x64\SQLite.Interop.dll" />
+    <Content Include="x86\SQLite.Interop.dll" />
     <None Include="Resources\dummy_profile.png" />
     <None Include="Resources\SupremeLogo.png" />
     <None Include="Resources\logo.jpg" />

@@ -23,6 +23,8 @@
 			<ComponentGroupRef Id="ProductComponents" />
 			<ComponentGroupRef Id="cs_files" />
 			<ComponentGroupRef Id="en_files" />
+			<ComponentGroupRef Id="x64_Folder" />
+			<ComponentGroupRef Id="x86_Folder" />
 			<ComponentGroupRef Id="assets_images_files" />
 			<ComponentGroupRef Id="Images_files" />
 			<ComponentRef Id="ApplicationShortcut" />
@@ -39,6 +41,8 @@
 					<Directory Id="Images" Name="Images" />
 					<Directory Id="en" Name="en" />
 					<Directory Id="cs" Name="cs" />
+					<Directory Id="STTimeTracker_x64" Name="x64" />
+					<Directory Id="STTimeTracker_x86" Name="x86" />
 					<Directory Id="assets" Name="assets">
 						<Directory Id="assets_images" Name="images" />
 					</Directory>
@@ -99,6 +103,9 @@
 			</Component>
 			<Component Id="System.Data.SQLite.dll" Guid="354ecd96-8d52-450b-98c5-005193ab07a9">
 			  <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.TimeTracker_TargetDir)System.Data.SQLite.dll" />
+			</Component>
+			<Component Id="timetracker.pdb" Guid="29eef086-d33d-4894-a93f-204400cb23c1">
+			  <File Id="timetracker.pdb" Name="timetracker.pdb" Source="$(var.TimeTracker_TargetDir)timetracker.pdb" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>
@@ -203,6 +210,21 @@
 		</ComponentGroup>
 	</Fragment>
 
+	<Fragment>
+		<ComponentGroup Id="x64_Folder" Directory="STTimeTracker_x64">
+			<Component Id="SQLite.Interop.dll.x64" Guid="76e8fcc3-e1bc-446b-a42b-ce100a6221f0">
+				<File Id="SQLite.Interop.dll.x64" Name="SQLite.Interop.dll" Source="$(var.TimeTracker_TargetDir)x64\SQLite.Interop.dll" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="x86_Folder" Directory="STTimeTracker_x86">
+			<Component Id="SQLite.Interop.dll.x86" Guid="76e8fcc3-e1bc-446b-a42b-ce100a6221f1">
+				<File Id="SQLite.Interop.dll.x86" Name="SQLite.Interop.dll" Source="$(var.TimeTracker_TargetDir)x86\SQLite.Interop.dll" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
 	<Fragment>
 		<ComponentGroup Id="assets_images_files" Directory="assets_images">
 			<Component Id="assets_images_2.png" Guid="c2f2592d-3252-407a-bf46-9ff5fcd4e1f2">

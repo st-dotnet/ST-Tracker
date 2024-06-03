@@ -14,6 +14,7 @@ namespace TimeTracker.Utilities
         private readonly UserLocalStorage storage;
         private readonly TrackerLocalStorage _trackerStorage;
         private readonly InternetManager _internetManager;
+        private TimeSpan totalTimeToShow;
 
         public DBAccessContext(TrackerLocalStorage trackerStorage, InternetManager internetManager)
         {
@@ -27,7 +28,6 @@ namespace TimeTracker.Utilities
             try
             {
                 var internetAvailavble = await _internetManager.CheckInternetConnected();
-
                 var dateTime = GetPreviousDate();
                 var empId = storage.RetrieveUserInformation().EmployeeId;
                 TrackerData newTrackerData = new TrackerData
@@ -38,18 +38,13 @@ namespace TimeTracker.Utilities
                     IdleTime = TimeSpan.Zero,
                     EmployeeId = empId,
                 };
-                TrackerData offlineTrackerData = new TrackerData
-                {
-                    TrackerId = newTrackerData.TrackerId,
-                    Date = newTrackerData.Date,
-                    TotalTime = newTrackerData.TotalTime,
-                    IdleTime = newTrackerData.IdleTime,
-                    EmployeeId = newTrackerData.EmployeeId
-                };
-                await _trackerStorage.SaveTrackerDataOffline(offlineTrackerData);
                 if (internetAvailavble)
                 {
                     await StoreTrackerDataToDB(newTrackerData);
+                }
+                else
+                {
+                    await _trackerStorage.SaveTrackerDataOffline(newTrackerData);
                 }
             }
             catch (Exception ex)
@@ -90,14 +85,9 @@ namespace TimeTracker.Utilities
 
         public async Task RemoveIdleTimeFromActual(TimeSpan idleTime, bool isYesWorking)
         {
-            var internetAvailavble = await _internetManager.CheckInternetConnected();
             var dateTime = GetPreviousDate();
             var empId = storage.RetrieveUserInformation().EmployeeId;
-            await _trackerStorage.RemoveIdleTimeFromActualOffline(idleTime, isYesWorking, dateTime, empId);
-            if (internetAvailavble)
-            {
-                await RemoveIdleTimeFromActualDB(idleTime, isYesWorking, dateTime, empId);
-            }
+            await RemoveIdleTimeFromActualDB(idleTime, isYesWorking, dateTime, empId);
         }
 
         public async Task RemoveIdleTimeFromActualDB(TimeSpan idleTime, bool isYesWorking, DateTime dateTime, Guid? empId)
@@ -217,12 +207,30 @@ namespace TimeTracker.Utilities
         }
         public async Task<TimeSpan> GetTotalTime()
         {
+            var internetAvailavble = await _internetManager.CheckInternetConnected();
+
             var dateTime = GetPreviousDate();
             var empId = storage.RetrieveUserInformation().EmployeeId;
-            var localTrackerData = await _trackerStorage.CheckOfflineTrackerDataExists(dateTime, empId);
-            if (localTrackerData != null)
+            if (internetAvailavble)
             {
-                return localTrackerData.TotalTime + localTrackerData.IdleTime;
+                var trackerData = await CheckTrackingExists(dateTime.Date, empId);
+                if (trackerData != null)
+                {
+                    totalTimeToShow = trackerData.TotalTime + trackerData.IdleTime;
+                    return totalTimeToShow;
+                }
+            }
+            else
+            {
+                var localTrackerData = await _trackerStorage.CheckOfflineTrackerDataExists(dateTime, empId);
+                if (localTrackerData != null)
+                {
+                    return localTrackerData.TotalTime + localTrackerData.IdleTime + totalTimeToShow;
+                }
+                else
+                {
+                    return totalTimeToShow;
+                }
             }
             return TimeSpan.Zero;
         }
@@ -233,37 +241,9 @@ namespace TimeTracker.Utilities
             var localTrackerData = await _trackerStorage.CheckOfflineTrackerDataExists(dateTime, empId);
             if (localTrackerData != null)
             {
-                await SyncLocalTrackerDataToDB(localTrackerData);
+                await StoreTrackerDataToDB(localTrackerData);
             }
-        }
-        private async Task SyncLocalTrackerDataToDB(TrackerData newTrackerData)
-        {
-            try
-            {
-                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
-                {
-                    string addUpdateQuery = "";
-                    var trackerData = await CheckTrackingExists(newTrackerData.Date, newTrackerData.EmployeeId);
-                    if (trackerData != null)
-                    {
-                        newTrackerData.TrackerId = newTrackerData.TrackerId;
-                        newTrackerData.EmployeeId = newTrackerData.EmployeeId;
-                        newTrackerData.TotalTime = newTrackerData.TotalTime;
-                        newTrackerData.IdleTime = newTrackerData.IdleTime;
-                        addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime WHERE TrackerId = @TrackerId";
-                    }
-                    else
-                    {
-                        addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId , IdleTime)
-                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
-                    }
-                    db.Execute(addUpdateQuery, newTrackerData);
-                }
-            }
-            catch (SqlException ex)
-            {
-                return;
-            }
+            await _trackerStorage.DeletePreviousOfflineRecords();
         }
     }
 }

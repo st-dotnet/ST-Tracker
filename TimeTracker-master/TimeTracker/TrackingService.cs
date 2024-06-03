@@ -143,7 +143,11 @@ namespace TimeTracker
         }
         private async void Timer_Tick_ForIldeCheck(object sender, EventArgs e)
         {
-            idleTimeCheck();
+            var internetAvailavble = await _internetManager.CheckInternetConnected();
+            if (internetAvailavble)
+            {
+                idleTimeCheck();
+            }
         }
 
         private async Task SaveTimerData()
