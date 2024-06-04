@@ -82,7 +82,7 @@ namespace TimeTracker
             }
             timer = new System.Windows.Forms.Timer();
             timer.Start();
-            timer.Interval = 2 * 60 * 1000; //Interval For Screenshot & Time Logg in DB after every 3 minutes
+            timer.Interval = 3 * 60 * 1000; //Interval For Screenshot & Time Logg in DB after every 3 minutes
             timer.Tick += Timer_Tick;
             //Timer For Idle 
             timerForIdle = new System.Windows.Forms.Timer();
