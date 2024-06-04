@@ -220,6 +220,8 @@ namespace TimeTracker.Form
         private async void notWorking_Click(object sender, EventArgs e)
         {
             await UpdateIdleTime(false);
+            this.trackingStartTimeToolStripTextBox.Text = "--:--:--";
+            this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.ZeroTime;
         }
         private async Task UpdateIdleTime(bool isYesWorking)
         {
