@@ -1,7 +1,12 @@
 ﻿using Microsoft.Identity.Client;
 using System;
+using System.Data.SqlClient;
+using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using TimeTracker.DapperUtility;
 using TimeTracker.Utilities;
+using Dapper;
 
 namespace TimeTracker.Form
 {
@@ -35,11 +40,10 @@ namespace TimeTracker.Form
                    .ExecuteAsync();
             if (result != null)
             {
-                Application appForm = new Application();
-                DBAccessContext dBAccessContext = new DBAccessContext(_trackerStorage, appForm.InternetManager);
-                var empId = await dBAccessContext.GetEmployeeId(result.Account.Username);
+                var empId = await GetEmployeeId(result.Account.Username);
                 var storage = new UserLocalStorage();
                 storage.SaveUserInformation(result, empId);
+                Application appForm = new Application();
                 this.Hide(); // Hide the login form
                 appForm.ShowDialog(); // Show the main application form
                 this.Close(); // Close the login form
@@ -47,6 +51,20 @@ namespace TimeTracker.Form
             else
             {
                 MessageBox.Show("Authentication failed. Please try again.");
+            }
+        }
+        private async Task<Guid?> GetEmployeeId(string username)
+        {
+            try
+            {
+                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
+                {
+                    return await db.QuerySingleOrDefaultAsync<Guid?>("SELECT EmployeeId FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
+                }
+            }
+            catch (SqlException ex)
+            {
+                return null;
             }
         }
     }

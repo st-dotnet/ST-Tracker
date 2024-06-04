@@ -169,24 +169,6 @@ namespace TimeTracker.Utilities
             }
         }
 
-        public async Task<Guid?> GetEmployeeId(string username)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(username))
-                {
-                    username = storage.RetrieveUserInformation().Username;
-                }
-                using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
-                {
-                    return await db.QuerySingleOrDefaultAsync<Guid?>("SELECT EmployeeId FROM Employees WHERE Email = @Username and IsActive = 1", new { Username = username });
-                }
-            }
-            catch (SqlException ex)
-            {
-                return null;
-            }
-        }
         private DateTime GetPreviousDate()
         {
             var dateTime = DateTime.Now;
