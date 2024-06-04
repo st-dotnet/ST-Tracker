@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using TimeTracker.Form;
 using TimeTracker.Properties;
 
@@ -7,12 +8,15 @@ namespace TimeTracker
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+        private static Mutex _mutex = new Mutex(true, "STTimeTracker");
         [STAThread]
         private static void Main()
         {
+            if (!_mutex.WaitOne(TimeSpan.Zero, true))
+            {
+                Console.WriteLine("Instance already running");
+                return;
+            }
             if (Settings.Default.language != "none")
             {
                 try
@@ -29,6 +33,7 @@ namespace TimeTracker
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
             System.Windows.Forms.Application.Run(new Login());
+            _mutex.ReleaseMutex();
         }
     }
 }

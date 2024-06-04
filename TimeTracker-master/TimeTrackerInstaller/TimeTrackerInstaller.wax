@@ -6,7 +6,10 @@
   <DirectoryMappings>
     <Item Key="" Value="INSTALLFOLDER" />
   </DirectoryMappings>
-  <FileMappings />
+  <FileMappings>
+    <Item Key="x64\SQLite.Interop.dll" Value="SQLite.Interop.dll.x64" />
+    <Item Key="x86\SQLite.Interop.dll" Value="SQLite.Interop.dll.x86" />
+  </FileMappings>
   <DeploySymbols>true</DeploySymbols>
   <DeployLocalizations>true</DeployLocalizations>
   <DeployExternalLocalizations>true</DeployExternalLocalizations>

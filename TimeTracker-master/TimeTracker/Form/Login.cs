@@ -13,11 +13,9 @@ namespace TimeTracker.Form
     public partial class Login : System.Windows.Forms.Form
     {
         private static IPublicClientApplication publicClientApp;
-        public TrackerLocalStorage _trackerStorage;
 
         public Login()
         {
-            _trackerStorage = new TrackerLocalStorage();
             InitializeComponent();
             publicClientApp = PublicClientApplicationBuilder
                 .Create("7244e5a8-349a-4d53-81c1-ae8f35c37ddf")

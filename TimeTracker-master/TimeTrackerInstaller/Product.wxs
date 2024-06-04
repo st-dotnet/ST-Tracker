@@ -46,6 +46,8 @@
 					<Directory Id="assets" Name="assets">
 						<Directory Id="assets_images" Name="images" />
 					</Directory>
+					<Directory Id="_x64" Name="x64" />
+					<Directory Id="_x86" Name="x86" />
 				</Directory>
 			</Directory>
 			<Directory Id="ProgramMenuFolder">
