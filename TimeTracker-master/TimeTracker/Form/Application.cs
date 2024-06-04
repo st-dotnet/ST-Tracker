@@ -18,6 +18,19 @@ namespace TimeTracker.Form
         private Timer RefreshTimer;
         private const int SW_RESTORE = 9;
         private DateTimeOffset IdleTimeDetection;
+        private const int MF_BYCOMMAND = 0x00000000;
+        private const int SC_CLOSE = 0xF060;
+
+        // Import necessary Windows API functions
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnableMenuItem(IntPtr hMenu, uint uIDEnableItem, uint uEnable);
+
+        // Constants to disable menu items
+        private const uint MF_GRAYED = 0x00000001;
+        private const uint MF_DISABLED = 0x00000002;
 
         //To show application on Front
         [DllImport("user32.dll")]
@@ -33,7 +46,7 @@ namespace TimeTracker.Form
             InternetManager = new InternetManager(this);
             _dbAccessContext = new DBAccessContext(_trackerStorage, InternetManager);
             TrackingService = new TrackingService(this, _dbAccessContext, InternetManager);
-
+            this.Load += MainForm_Load;
             AssignEmployeeValues();
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -54,7 +67,19 @@ namespace TimeTracker.Form
             SetTotalTime();
             this.TopMost = true;
         }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            DisableCloseButton();
+        }
 
+        private void DisableCloseButton()
+        {
+            IntPtr hSystemMenu = GetSystemMenu(this.Handle, false);
+            if (hSystemMenu != IntPtr.Zero)
+            {
+                EnableMenuItem(hSystemMenu, SC_CLOSE, MF_BYCOMMAND | MF_GRAYED);
+            }
+        }
         private void RefreshTitle()
         {
             var text = ProductName;
@@ -137,22 +162,6 @@ namespace TimeTracker.Form
         private void RefreshTrackingInfo(object sender, EventArgs e)
         {
             this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
-        }
-
-        private async void Application_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            var tracking = TrackingService.Tracking;
-            if (tracking)
-            {
-                await stopTracking();
-            }
-            else
-            {
-                if (this.idlePanel.Visible == true)
-                {
-                    await UpdateIdleTime(false);
-                }
-            }
         }
 
         private void notifyIcon_Click(object sender, EventArgs e)
