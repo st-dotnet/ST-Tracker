@@ -271,6 +271,7 @@ namespace TimeTracker.Form
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "Application";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Application_FormClosing);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.PerformLayout();
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
