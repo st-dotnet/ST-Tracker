@@ -59,22 +59,17 @@ namespace TimeTracker.Utilities
             {
                 using (IDbConnection db = new SqlConnection(ConnectionClass.ConVal()))
                 {
-                    string addUpdateQuery = "";
-                    var trackerData = await CheckTrackingExists(newTrackerData.Date, newTrackerData.EmployeeId); // Check if Tracking exists for the same day
-                    if (trackerData != null)
+                    var parameters = new
                     {
-                        newTrackerData.TrackerId = trackerData.TrackerId;
-                        newTrackerData.EmployeeId = trackerData.EmployeeId;
-                        newTrackerData.TotalTime = trackerData.TotalTime + newTrackerData.TotalTime;
-                        newTrackerData.IdleTime = trackerData.IdleTime;
-                        addUpdateQuery = @"UPDATE Tracker SET TotalTime = @TotalTime WHERE TrackerId = @TrackerId";
-                    }
-                    else
-                    {
-                        addUpdateQuery = @"INSERT INTO Tracker (TrackerId, Date, TotalTime, EmployeeId , IdleTime)
-                                    VALUES (@TrackerId, @Date, @TotalTime, @EmployeeId, @IdleTime)";
-                    }
-                    db.Execute(addUpdateQuery, newTrackerData);
+                        Date = newTrackerData.Date,
+                        EmployeeId = newTrackerData.EmployeeId,
+                        TotalTime = newTrackerData.TotalTime,
+                        IdleTime = newTrackerData.IdleTime,
+                        TrackerId = newTrackerData.TrackerId,
+                    };
+
+                    await db.ExecuteAsync("UpsertTrackerData", parameters, commandType: CommandType.StoredProcedure);
+
                 }
             }
             catch (SqlException ex)

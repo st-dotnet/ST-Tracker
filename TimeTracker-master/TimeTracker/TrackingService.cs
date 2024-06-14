@@ -160,7 +160,7 @@ namespace TimeTracker
             await _dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
             if (internetAvailavble)
             {
-                await Captures(keyStrokes);//Capture Camera Photo + ScreenShot
+                await Task.Run(() => Captures(keyStrokes));//Capture Camera Photo + ScreenShot
             }
             _application.SetTotalTime();
         }
