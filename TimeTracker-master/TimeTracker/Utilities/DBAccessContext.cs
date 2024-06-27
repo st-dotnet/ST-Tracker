@@ -23,11 +23,10 @@ namespace TimeTracker.Utilities
             _internetManager = internetManager;
         }
         #region Save Tracker Data to Database
-        public async Task AddUpdateTrackerInfo(TimeSpan statTotal)
+        public async Task AddUpdateTrackerInfo(TimeSpan statTotal, bool internetAvailavble)
         {
             try
             {
-                var internetAvailavble = await _internetManager.CheckInternetConnected();
                 var dateTime = GetPreviousDate();
                 var empId = storage.RetrieveUserInformation().EmployeeId;
                 TrackerData newTrackerData = new TrackerData
@@ -40,11 +39,11 @@ namespace TimeTracker.Utilities
                 };
                 if (internetAvailavble)
                 {
-                    await StoreTrackerDataToDB(newTrackerData);
+                    await Task.Run(() => StoreTrackerDataToDB(newTrackerData));
                 }
                 else
                 {
-                    await _trackerStorage.SaveTrackerDataOffline(newTrackerData);
+                    await Task.Run(() => _trackerStorage.SaveTrackerDataOffline(newTrackerData));
                 }
             }
             catch (Exception ex)

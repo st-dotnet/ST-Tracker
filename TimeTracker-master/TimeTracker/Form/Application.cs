@@ -236,9 +236,9 @@ namespace TimeTracker.Form
         }
         private async Task UpdateIdleTime(bool isYesWorking)
         {
-            TimeSpan elapsedIdlePopupTime = DateTimeOffset.Now - this.IdleTimeDetection;
-            await _dbAccessContext.RemoveIdleTimeFromActual(elapsedIdlePopupTime, isYesWorking);
             this.idlePanel.Visible = false;
+            TimeSpan elapsedIdlePopupTime = DateTimeOffset.Now - this.IdleTimeDetection;
+            await Task.Run(() => _dbAccessContext.RemoveIdleTimeFromActual(elapsedIdlePopupTime, isYesWorking));
             this.toolStripMain.Enabled = true;
             SetTotalTime();
         }

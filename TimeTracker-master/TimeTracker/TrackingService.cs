@@ -152,12 +152,12 @@ namespace TimeTracker
 
         private async Task SaveTimerData()
         {
-            var internetAvailavble = await _internetManager.CheckInternetConnected();
+            bool internetAvailavble = await _internetManager.CheckInternetConnected();
             int keyStrokes = CheckActivity();//Get KeyStrokes
             keystrokesForIdle += keyStrokes;
             TimeSpan elapsedTime = GetIntervalTimeElasped();
             this.StartTimeInterval = DateTimeOffset.Now;
-            await _dBAccessContext.AddUpdateTrackerInfo(elapsedTime);
+            await _dBAccessContext.AddUpdateTrackerInfo(elapsedTime, internetAvailavble);
             if (internetAvailavble)
             {
                 await Task.Run(() => Captures(keyStrokes));//Capture Camera Photo + ScreenShot

@@ -30,30 +30,31 @@ namespace TimeTracker.Utilities
         {
             CheckInternetConnected();
         }
-        private static bool IsInternetAvailable()
+        private async static Task<bool> IsInternetAvailable()
         {
-            try
+            using (var ping = new Ping())
             {
-                using (var ping = new Ping())
+                try
                 {
-                    var result = ping.Send("8.8.8.8", 2000);
-                    return result.Status == IPStatus.Success;
+                    var reply = await ping.SendPingAsync("8.8.8.8", 2000);
+                    return reply.Status == IPStatus.Success;
                 }
-            }
-            catch (Exception)
-            {
-                return false;
+                catch (PingException)
+                {
+                    // Handle ping exceptions if needed
+                    return false;
+                }
             }
         }
         public async Task<bool> CheckInternetConnected()
         {
             var internetAvailable = false;
-            if (IsInternetAvailable())
+            if (await IsInternetAvailable())
             {
                 if (isSaveToDB == true)
                 {
                     isSaveToDB = false;
-                    await _application.SyncLocalDataToServer();
+                    await Task.Run(() => _application.SyncLocalDataToServer());
                 }
                 internetAvailable = true;
             }
